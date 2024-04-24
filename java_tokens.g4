@@ -89,3 +89,15 @@ SEMICOLON : ';' ;
 DOT : '.' ;
 TERNARY : '?' ;
 THE_DOUBLE_COLON : '::' ;
+
+WHITESPACES
+    : [ \t\r\n]+ -> skip
+    ;
+
+BLOCKCOMMENT
+    :   '/*' .*? '*/' -> skip
+    ;
+
+SINGLELINECOMMENT
+    :   '//' ~[\r\n]* -> skip
+    ;
