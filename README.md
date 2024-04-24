@@ -5,7 +5,7 @@
 - Krzysztof Czerenko
 - Olaf Grykałowski
 
-- ## Założenia programu
+## Założenia programu
 Napisanie programu, który przekształci plik z języka Java na język Python.
 
 ## Informacja o stosowanych generatorach skanerów/parserów, pakietach zewnętrznych
