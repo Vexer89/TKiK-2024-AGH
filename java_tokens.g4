@@ -110,3 +110,14 @@ fragment ESC:
 CHAR:
 '\'' . '\'';
 
+WHITESPACES
+    : [ \t\r\n]+ -> skip
+    ;
+
+BLOCKCOMMENT
+    :   '/*' .*? '*/' -> skip
+    ;
+
+SINGLELINECOMMENT
+    :   '//' ~[\r\n]* -> skip
+    ;
