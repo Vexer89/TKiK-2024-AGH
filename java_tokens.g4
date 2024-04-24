@@ -1,4 +1,4 @@
-lexer grammar java;
+lexer grammar java_tokens;
 
 //Tokens
 
@@ -49,6 +49,8 @@ Assert : 'assert';
 Import : 'import';
 Package : 'package';
 
+Void : 'void';
+
 // Operatory arytmetyczne
 ADD : '+' ;
 SUB : '-' ;
@@ -89,3 +91,22 @@ SEMICOLON : ';' ;
 DOT : '.' ;
 TERNARY : '?' ;
 THE_DOUBLE_COLON : '::' ;
+
+ID:
+[a-zA-Z_$][a-zA-Z_$0-9]*;
+
+INTEGER_NUMBER:
+[0-9]+;
+
+FLOATING_NUMBER:
+[0-9]+.[0-9]+;
+
+STRING_OF_CHARACTERS:
+'"' ( ESC | ~["\\] )* '"';
+
+fragment ESC:
+'\\' .;
+
+CHAR:
+'\'' . '\'';
+
