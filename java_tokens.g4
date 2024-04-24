@@ -1,4 +1,4 @@
-grammar java;
+lexer grammar java;
 
 //Tokens
 
