@@ -3,112 +3,131 @@ lexer grammar java_tokens;
 //Tokens
 
 //KeyWords
-If : 'if';
-Else : 'else';
+IF : 'if';
+ELSE : 'else';
 
-Switch : 'switch';
-Case : 'case';
+SWITCH : 'switch';
+CASE : 'case';
 
-While : 'while';
-For : 'for';
-Break : 'break';
-Continue : 'continue';
-Do : 'do';
+WHILE : 'while';
+FOR : 'for';
+BREAK : 'break';
+CONTINUE : 'continue';
+DO : 'do';
 
-Class : 'class';
-Enum : 'enum';
+CLASS : 'class';
+ENUM : 'enum';
 
-Public : 'public';
-Private : 'private';
-Protected : 'protected';
-Static : 'static';
-Final : 'final';
-Abstract : 'abstract';
-Default : 'default';
-Extends : 'extends';
-Implements : 'implements';
-Volatile : 'volataile';
-Throws : 'throws';
+PUBLIC : 'public';
+PRIVATE : 'private';
+PROTECTED : 'protected';
+STATIC : 'static';
+FINAL : 'final';
+ABSTRACT : 'abstract';
+DEFAULT : 'default';
+EXTENDS : 'extends';
+IMPLEMENTS : 'implements';
+VOLATAILE : 'volataile';
+THROWS : 'throws';
 
 
-True : 'true';
-False : 'false';
-Null : 'null';
+TRUE : 'true';
+FALSE : 'false';
+NULL : 'null';
 
-Try : 'try';
-Catch : 'catch';
-Finally : 'finally';
+TRY : 'try';
+CATCH : 'catch';
+FINALLY : 'finally';
 
-New : 'new';
-This : 'this';
+NEW : 'new';
+THIS : 'this';
 
-Return : 'return';
+RETURN : 'return';
 
-Assert : 'assert';
+ASSERT : 'assert';
 
-Import : 'import';
-Package : 'package';
+IMPORT : 'import';
+PACKAGE : 'package';
 
-Void : 'void';
-
-// Operatory arytmetyczne
+// arithmetic operators
 ADD : '+' ;
 SUB : '-' ;
 MUL : '*' ;
 DIV : '/' ;
 MOD : '%' ;
-// Nawiasy
+// brackets
 LPAREN : '(' ;
 RPAREN : ')' ;
 LBRACE : '{' ;
 RBRACE : '}' ;
 LSQUARE : '[' ;
 RSQUARE : ']' ;
-// Operatory relacyjne
+// relational operators
 EQUAL : '==' ;
 NOT_EQUAL : '!=' ;
 GREATER_THAN : '>' ;
 LESS_THAN : '<' ;
 GREATER_THAN_OR_EQUAL : '>=' ;
 LESS_THAN_OR_EQUAL : '<=' ;
-// Operatory logiczne
+// logical operators
 LOGICAL_AND : '&&' ;
 LOGICAL_OR : '||' ;
 LOGICAL_NOT : '!' ;
-// Operatory inkrementacji/dekrementacji
+// incremantion/decramentation operators
 INCREMENT : '++' ;
 DECREMENT : '--' ;
-// Operatory przypisania
+// assignment operators
 ASSIGN : '=' ;
 ADD_ASSIGN : '+=' ;
 SUB_ASSIGN : '-=' ;
 MUL_ASSIGN : '*=' ;
 DIV_ASSIGN : '/=' ;
 MOD_ASSIGN : '%=' ;
-// Inne
+// other
 COLON : ':' ;
 SEMICOLON : ';' ;
 DOT : '.' ;
 TERNARY : '?' ;
 THE_DOUBLE_COLON : '::' ;
 
-ID:
-[a-zA-Z_$][a-zA-Z_$0-9]*;
+//data types
+VOID : 'void';
+INT : 'int';
+FLOAT : 'float';
+DOUBLE : 'double';
+LONG : 'long';
+SHORT : 'short';
+BYTE : 'byte';
+CHAR : 'char';
+BOOLEAN : 'boolean';
 
-INTEGER_NUMBER:
-[0-9]+;
+ID
+    :   [a-zA-Z_][a-zA-Z_$0-9]*
+    ;
 
-FLOATING_NUMBER:
-[0-9]+.[0-9]+;
+fragment DIGIT
+    :   [0-9]
+    ;
 
-STRING_OF_CHARACTERS:
-'"' ( ESC | ~["\\] )* '"';
+INTEGER_NUMBER
+    :   DIGIT+
+    ;
 
-fragment ESC:
-'\\' .;
+FLOAT_NUMBER
+    :   DIGIT+.DIGIT+
+    ;
 
-CHAR:
-'\'' . '\'';
+STRING
+    :   '"' ( ESC | ~["\\] )* '"'
+    ;
+
+fragment ESC
+    :   '\\' .
+    ;
+
+CHARACTER
+    :   '\'' . '\''
+    ;
 
 WHITESPACES
     : [ \t\r\n]+ -> skip
