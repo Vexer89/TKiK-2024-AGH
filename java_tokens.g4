@@ -87,6 +87,7 @@ MOD_ASSIGN : '%=' ;
 COLON : ':' ;
 SEMICOLON : ';' ;
 DOT : '.' ;
+COMMA : ',' ;
 TERNARY : '?' ;
 THE_DOUBLE_COLON : '::' ;
 
