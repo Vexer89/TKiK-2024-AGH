@@ -26,7 +26,7 @@ classMemberDeclaration : fieldDeclaration
 methodDeclaration : modifiers? type ID LPAREN formalParameters? RPAREN throwedExeption? methodBody ;
 throwedExeption : THROWS ID (COMMA ID)*;
 
-fieldDeclaration : modifiers? type variableDeclarators SEMICOLON;
+fieldDeclaration : modifiers? variableDeclarators SEMICOLON;
 
 enumDeclaration : DEFAULT? ENUM ID enumBody ;
 enumBody : LBRACE ID (COMMA ID)* SEMICOLON (classMemberDeclaration)* RBRACE;
@@ -43,12 +43,8 @@ formalParameter : type ID ;
 methodBody : block ;
 block : LBRACE blockStatement* RBRACE ;
 
-blockStatement : type variableDeclarators SEMICOLON 
-               | statement SEMICOLON 
-               ;
-variableDeclarators : type? variableDeclarator (COMMA variableDeclarator)* ;
-variableDeclarator : type? ID (ASSIGN variableInitializer)? ;
-variableInitializer : literal ;
+blockStatement : statement SEMICOLON ;
+variableDeclarators : type (ID (ASSIGN literal)?)+ ;
 
 // Reguły dla instrukcji
 statement : ifStatement
@@ -60,35 +56,34 @@ statement : ifStatement
           | breakStatement
           | continueStatement
           | throwStatement
-          | expressionStatement
+          | expression
           | block
           | assignmentStatement
           | incrementStatement
           | decrementStatement
           | functionCall
           ;
-expressionStatement : expression SEMICOLON ;
 ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (ID | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
 whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (ID | literal) RPAREN) LBRACE statement RBRACE ;
 forStatement : FOR LPAREN forControl RPAREN LBRACE statement RBRACE ;
 forControl : enhancedForControl 
            | traditionalForControl 
            ;
-traditionalForControl : forInit SEMICOLON expression SEMICOLON forUpdate ;
-forInit : variableDeclarator 
-        | expression 
+traditionalForControl : forInit SEMICOLON logicalExpression SEMICOLON forUpdate ;
+forInit : assignmentStatement
+        | ID
         ;
-forUpdate : expression ;
-enhancedForControl : type ID COLON expression ;
-switchStatement : SWITCH LPAREN expression RPAREN switchBlock ;
+forUpdate : (aritmeticExpression | incrementStatement | decrementStatement) ;
+enhancedForControl : type ID COLON expression ;//fix
+switchStatement : SWITCH LPAREN ID RPAREN switchBlock ;
 switchBlock : LBRACE (switchBlockStatementGroup)* RBRACE ;
 switchBlockStatementGroup : switchLabel+ block ;
-switchLabel : CASE expression COLON | DEFAULT COLON ;
+switchLabel : CASE literal COLON | DEFAULT COLON ;
 tryStatement : TRY block (catchClause+ finallyBlock? | finallyBlock) ;
 catchClause : CATCH LPAREN catchFormalParameter RPAREN block ;
 catchFormalParameter : type ID ;
 finallyBlock : FINALLY block ;
-returnStatement : RETURN expression? SEMICOLON ;
+returnStatement : RETURN (expression | ID | literal)? SEMICOLON ;
 breakStatement : BREAK ID? SEMICOLON ;
 continueStatement : CONTINUE ID? SEMICOLON ;
 throwStatement : THROW (ID | newInstance) SEMICOLON ;
