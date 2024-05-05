@@ -1,5 +1,10 @@
 grammar java_grammar;
 
+//to do:
+//obsługa list, tablic i słowników
+//obsługa print i input
+//ew. obsługa kropek
+
 // Reguły dla programu
 program : (importDeclaration | packageDeclaration)* PUBLIC structerDeclaration+ ;
 
@@ -92,7 +97,6 @@ throwStatement : THROW (ID | newInstance) SEMICOLON ;
 
 //to do:
 //kropki
-//
 
 
 expression : logicalExpression
