@@ -104,12 +104,12 @@ assignmentOperator : ASSIGN
                    | DIV_ASSIGN 
                    | MOD_ASSIGN
                    ;
-logicalOrExpression : logicalAndExpression LOGICAL_OR logicalAndExpression ;
-logicalAndExpression : equalityExpression LOGICAL_AND equalityExpression ;
-equalityExpression : relationalExpression (EQUAL | NOT_EQUAL) relationalExpression ;
-relationalExpression : additiveExpression (GREATER_THAN | LESS_THAN | LESS_THAN_OR_EQUAL | GREATER_THAN_OR_EQUAL) additiveExpression ;
-additiveExpression : multiplicativeExpression (ADD | SUB) multiplicativeExpression ;
-multiplicativeExpression : unaryExpression (MUL | DIV | MOD) unaryExpression ;
+logicalOrExpression : logicalAndExpression (LOGICAL_OR logicalAndExpression)* ;
+logicalAndExpression : equalityExpression (LOGICAL_AND equalityExpression)* ;
+equalityExpression : relationalExpression ((EQUAL | NOT_EQUAL) relationalExpression)* ;
+relationalExpression : additiveExpression ((GREATER_THAN | LESS_THAN | LESS_THAN_OR_EQUAL | GREATER_THAN_OR_EQUAL) additiveExpression)* ;
+additiveExpression : multiplicativeExpression ((ADD | SUB) multiplicativeExpression)* ;
+multiplicativeExpression : unaryExpression ((MUL | DIV | MOD) unaryExpression)* ;
 unaryExpression : primary 
                 | (ADD | SUB | LOGICAL_NOT | THE_DOUBLE_COLON) unaryExpression 
                 | primary INCREMENT 
