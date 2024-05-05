@@ -62,10 +62,14 @@ statement : ifStatement
           | throwStatement
           | expressionStatement
           | block
+          | assignmentStatement
+          | incrementStatement
+          | decrementStatement
+          | functionCall
           ;
 expressionStatement : expression SEMICOLON ;
-ifStatement : IF LPAREN expression RPAREN LBRACE statement RBRACE (ELSE statement)?;
-whileStatement : WHILE LPAREN expression RPAREN LBRACE statement RBRACE ;
+ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (ID | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
+whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (ID | literal) RPAREN) LBRACE statement RBRACE ;
 forStatement : FOR LPAREN forControl RPAREN LBRACE statement RBRACE ;
 forControl : enhancedForControl 
            | traditionalForControl 
@@ -92,11 +96,26 @@ throwStatement : THROW (ID | newInstance) SEMICOLON ;
 //Reguły dla wyrażeń
 
 
-expression : logicalOrExpression 
-           | assignmentExpression
+expression : logicalExpression
+           | aritmeticExpression
            ;
 
-assignmentExpression : unaryExpression assignmentOperator expression ;
+logicalExpression : LOGICAL_NOT? LPAREN (expression | ID | literal) (LOGICAL_OR
+                                               | LOGICAL_AND
+                                               | EQUAL
+                                               | NOT_EQUAL
+                                               | GREATER_THAN
+                                               | LESS_THAN
+                                               | LESS_THAN_OR_EQUAL
+                                               | GREATER_THAN_OR_EQUAL) (expression | ID | literal) RPAREN;
+
+aritmeticExpression : LPAREN (expression | ID | literal) (ADD
+                                                        | SUB
+                                                        | MUL
+                                                        | DIV
+                                                        | MOD) (expression | ID | literal) RPAREN;//fix?
+
+assignmentStatement : type? ID assignmentOperator (ID | literal | newInstance | expression | functionCall) ;
 assignmentOperator : ASSIGN 
                    | ADD_ASSIGN 
                    | SUB_ASSIGN 
@@ -104,21 +123,7 @@ assignmentOperator : ASSIGN
                    | DIV_ASSIGN 
                    | MOD_ASSIGN
                    ;
-logicalOrExpression : logicalAndExpression (LOGICAL_OR logicalAndExpression)* ;
-logicalAndExpression : equalityExpression (LOGICAL_AND equalityExpression)* ;
-equalityExpression : relationalExpression ((EQUAL | NOT_EQUAL) relationalExpression)* ;
-relationalExpression : additiveExpression ((GREATER_THAN | LESS_THAN | LESS_THAN_OR_EQUAL | GREATER_THAN_OR_EQUAL) additiveExpression)* ;
-additiveExpression : multiplicativeExpression ((ADD | SUB) multiplicativeExpression)* ;
-multiplicativeExpression : unaryExpression ((MUL | DIV | MOD) unaryExpression)* ;
-unaryExpression : primary 
-                | (ADD | SUB | LOGICAL_NOT | THE_DOUBLE_COLON) unaryExpression 
-                | primary INCREMENT 
-                | primary DECREMENT
-                ;
-primary : literal 
-        | ID 
-        | LPAREN expression RPAREN 
-        ;
+
 literal : INTEGER_NUMBER 
         | FLOAT_NUMBER 
         | STRING 
@@ -129,13 +134,17 @@ literal : INTEGER_NUMBER
 
 newInstance : NEW ID LPAREN formalParameters RPAREN;
 
+incrementStatement: ID INCREMENT;
+decrementStatement: ID DECREMENT;
+functionCall: ID LPAREN ID? (COMMA ID)* RPAREN;
+
 //Reguły dla typów danych
 type : dataType 
      | VOID 
      //| referenceType
      ;
 //referenceType : NEW? type ID (LESS_THAN typeArguments GREATER_THAN)? (LSQUARE RSQUARE)* ;
-typeArguments : type (COMMA type)* ;
+//typeArguments : type (COMMA type)* ;
 modifiers : modifier+ ;
 modifier : PUBLIC 
          | PRIVATE 
