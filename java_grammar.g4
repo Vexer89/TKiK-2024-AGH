@@ -35,8 +35,8 @@ block : LBRACE blockStatement* RBRACE ;
 blockStatement : type variableDeclarators SEMICOLON 
                | statement SEMICOLON 
                ;
-variableDeclarators : variableDeclarator (COMMA variableDeclarator)* ;
-variableDeclarator : ID (ASSIGN variableInitializer)? ;
+variableDeclarators : type? variableDeclarator (COMMA variableDeclarator)* ;
+variableDeclarator : type? ID (ASSIGN variableInitializer)? ;
 variableInitializer : literal ;
 
 // Reguły dla instrukcji
@@ -60,7 +60,7 @@ forControl : enhancedForControl
            | traditionalForControl 
            ;
 traditionalForControl : forInit SEMICOLON expression SEMICOLON forUpdate ;
-forInit : variableDeclaration 
+forInit : variableDeclarator 
         | expression 
         ;
 forUpdate : expression ;
