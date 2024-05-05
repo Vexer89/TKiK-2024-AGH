@@ -1,7 +1,7 @@
 grammar JavaGrammar;
 
 // Reguły dla programu
-program : (importDeclaration | packageDeclaration)* (classDeclaration)+;
+program : (importDeclaration | packageDeclaration)* PUBLIC classDeclaration (classDeclaration | interfaceDeclaration)* ;
 
 // Reguły dla importów
 importDeclaration : IMPORT qualifiedName SEMICOLON ;
@@ -9,7 +9,7 @@ packageDeclaration : PACKAGE qualifiedName SEMICOLON ;
 qualifiedName : ID (DOT ID)* ;
 
 //Reguły dla klasy i interfejsu
-classDeclaration : modifiers? CLASS ID superClass? interfaces? classBody ;
+classDeclaration : classModifiers? CLASS ID superClass? interfaces? classBody ;
 classBody : LBRACE (classMemberDeclaration)* LBRACE ;
 superClass : EXTENDS ID (COMMA ID)* ;
 interfaces : IMPREMENTS ID (COMMA ID)* ;
@@ -21,7 +21,7 @@ classMemberDeclaration : fieldDeclaration
                        ;
 methodDeclaration : modifiers? type ID LPAREN formalParameters? RPAREN methodBody ;
 fieldDeclaration : modifiers? type variableDeclarators SEMICOLON;
-interfaceDeclaration : modifiers? INTERFACE ID interfaceBody;
+interfaceDeclaration : classModifiers? INTERFACE ID interfaceBody;
 interfaceBody : LBRACE (interfaceMemberDeclaration)* RBRACE;
 interfaceMemberDeclaration : fieldDeclaration 
                            | methodDeclaration 
@@ -128,9 +128,12 @@ modifier : PUBLIC
          | FINAL 
          | ABSTRACT 
          | DEFAULT 
-         | EXTENDS 
-         | IMPLEMENTS 
          | VOLATAILE 
-         | THROWS 
          ;
+classModifiers : classModifier+ ;
+classModifier : ABSTRACT
+              | DEFAULT
+              | FINAL
+              | THROWS 
+              ;
 dataType : NEW? (INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN) ;
