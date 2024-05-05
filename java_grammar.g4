@@ -118,7 +118,7 @@ type : dataType
      | VOID 
      | referenceType 
      ;
-referenceType : NEW? ID (LESS_THAN typeArguments GREATER_THAN)? (LSQUARE RSQUARE)* ;
+referenceType : NEW? type ID (LESS_THAN typeArguments GREATER_THAN)? (LSQUARE RSQUARE)* ;
 typeArguments : type (COMMA type)* ;
 modifiers : modifier+ ;
 modifier : PUBLIC 
