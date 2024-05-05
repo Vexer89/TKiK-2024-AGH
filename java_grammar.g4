@@ -95,6 +95,10 @@ throwStatement : THROW (ID | newInstance) SEMICOLON ;
 
 //Reguły dla wyrażeń
 
+//to do:
+//kropki
+//
+
 
 expression : logicalExpression
            | aritmeticExpression
@@ -160,7 +164,7 @@ classModifier : ABSTRACT
               | DEFAULT
               | FINAL
               ;
-dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN;
+dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
 
 //Tokens
 
@@ -265,6 +269,7 @@ SHORT : 'short';
 BYTE : 'byte';
 CHAR : 'char';
 BOOLEAN : 'boolean';
+STRING : 'String';
 
 ID
     :   [a-zA-Z_][a-zA-Z_$0-9]*
@@ -282,7 +287,7 @@ FLOAT_NUMBER
     :   DIGIT+.DIGIT+
     ;
 
-STRING
+STRING_TEXT
     :   '"' ( ESC | ~["\\] )* '"'
     ;
 
