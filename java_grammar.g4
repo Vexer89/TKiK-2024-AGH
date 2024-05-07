@@ -78,7 +78,7 @@ traditionalForControl : forInit SEMICOLON logicalExpression SEMICOLON forUpdate 
 forInit : assignmentStatement
         | ID
         ;
-forUpdate : (aritmeticExpression | incrementStatement | decrementStatement) ;
+forUpdate : (arithmeticExpression | incrementStatement | decrementStatement) ;
 enhancedForControl : type ID COLON expression ;//fix
 switchStatement : SWITCH LPAREN ID RPAREN switchBlock ;
 switchBlock : LBRACE (switchBlockStatementGroup)* RBRACE ;
@@ -94,29 +94,62 @@ continueStatement : CONTINUE ID? SEMICOLON ;
 throwStatement : THROW (ID | newInstance) SEMICOLON ;
 
 //Reguły dla wyrażeń
+//fix
 
-//to do:
-//kropki
-
+//((4 + 4) + 4)
 
 expression : logicalExpression
-           | aritmeticExpression
+           | arithmeticExpression
            ;
 
-logicalExpression : LOGICAL_NOT? LPAREN (expression | ID | literal) (LOGICAL_OR
-                                               | LOGICAL_AND
-                                               | EQUAL
-                                               | NOT_EQUAL
-                                               | GREATER_THAN
-                                               | LESS_THAN
-                                               | LESS_THAN_OR_EQUAL
-                                               | GREATER_THAN_OR_EQUAL) (expression | ID | literal) RPAREN;
+logicalExpression
+    : logicalTerm
+    | logicalExpression logicalOperator logicalTerm
+    ;
 
-aritmeticExpression : LPAREN (expression | ID | literal) (ADD
-                                                        | SUB
-                                                        | MUL
-                                                        | DIV
-                                                        | MOD) (expression | ID | literal) RPAREN;//fix?
+logicalTerm
+    : ID
+    | literal
+    | unaryLogicalExpression
+    | LPAREN logicalExpression RPAREN
+    | LPAREN arithmeticExpression RPAREN
+    | arithmeticExpression
+    ;
+
+unaryLogicalExpression
+    : LOGICAL_NOT logicalTerm
+    ;
+
+logicalOperator
+    : LOGICAL_OR
+    | LOGICAL_AND
+    | EQUAL
+    | NOT_EQUAL
+    | GREATER_THAN
+    | LESS_THAN
+    | LESS_THAN_OR_EQUAL
+    | GREATER_THAN_OR_EQUAL
+    ;
+
+arithmeticExpression : arithmeticTerm
+                    | arithmeticExpression arithmeticOperator arithmeticTerm;
+
+arithmeticTerm : ID
+               | literal
+               | unaryArithmeticExpression
+               | LPAREN arithmeticExpression RPAREN
+               ;
+
+unaryArithmeticExpression
+    : (ADD | SUB) arithmeticTerm
+    ;
+
+arithmeticOperator: ADD
+                 | SUB
+                 | MUL
+                 | DIV
+                 | MOD
+                 ;
 
 assignmentStatement : type? ID assignmentOperator (ID | literal | newInstance | expression | functionCall) ;
 assignmentOperator : ASSIGN 
@@ -166,6 +199,10 @@ classModifier : ABSTRACT
 dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
 
 //Tokens
+
+//Data Structers
+
+
 
 //KeyWords
 IF : 'if';
