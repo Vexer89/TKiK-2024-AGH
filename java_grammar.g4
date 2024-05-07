@@ -204,6 +204,8 @@ dataStructers : ARRAYLIST
               | HASHMAP
               ;
 
+extendedID : THIS | ((THIS COMMA)? ID (COMMA ID)*) ;
+
 //Tokens
 
 //Data Structers
