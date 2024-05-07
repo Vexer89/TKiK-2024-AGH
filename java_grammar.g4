@@ -1,17 +1,11 @@
 grammar java_grammar;
 
-//to do:
-//ew. tablice ???
-//obsługa print i input
-//ew. obsługa kropek
-
 // Reguły dla programu
 program : (importDeclaration | packageDeclaration)* PUBLIC structerDeclaration+ ;
 
 // Reguły dla importów
-importDeclaration : IMPORT qualifiedName SEMICOLON ;
-packageDeclaration : PACKAGE qualifiedName SEMICOLON ;
-qualifiedName : ID (DOT ID)* ;
+importDeclaration : IMPORT extendedID SEMICOLON ;
+packageDeclaration : PACKAGE extendedID SEMICOLON ;
 
 //Reguły dla klasy i interfejsu
 structerDeclaration : classDeclaration
@@ -51,7 +45,8 @@ block : LBRACE blockStatement* RBRACE ;
 blockStatement : statement SEMICOLON ;
 variableDeclarators : type (ID (ASSIGN literal)?)+ ;
 
-variableDeclarator
+//tablice - do przejrzenia
+variableDeclarator // to jest unused
     : ID
     | ID ASSIGN expression // przypisanie wartości
     | ID LSQUARE expression RSQUARE ASSIGN arrayInitializer // inicjalizacja tablicy
@@ -61,7 +56,7 @@ arrayInitializer
     : LBRACE (expression (COMMA expression)*)? RBRACE
     ;
 
-arrayAccess
+arrayAccess // tez unused
     : ID LSQUARE expression RSQUARE
     ;
 
@@ -84,19 +79,19 @@ statement : ifStatement
           | printStatement
           | inputStatement
           ;
-ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (ID | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
-whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (ID | literal) RPAREN) LBRACE statement RBRACE ;
+ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
+whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE ;
 forStatement : FOR LPAREN forControl RPAREN LBRACE statement RBRACE ;
 forControl : enhancedForControl 
            | traditionalForControl 
            ;
 traditionalForControl : forInit SEMICOLON logicalExpression SEMICOLON forUpdate ;
 forInit : assignmentStatement
-        | ID
+        | extendedIDwithThis
         ;
 forUpdate : (arithmeticExpression | incrementStatement | decrementStatement) ;
-enhancedForControl : type ID COLON ID ;
-switchStatement : SWITCH LPAREN ID RPAREN switchBlock ;
+enhancedForControl : type ID COLON extendedIDwithThis ;
+switchStatement : SWITCH LPAREN extendedIDwithThis RPAREN switchBlock ;
 switchBlock : LBRACE (switchBlockStatementGroup)* RBRACE ;
 switchBlockStatementGroup : switchLabel+ block ;
 switchLabel : CASE literal COLON | DEFAULT COLON ;
@@ -104,9 +99,9 @@ tryStatement : TRY block (catchClause+ finallyBlock? | finallyBlock) ;
 catchClause : CATCH LPAREN catchFormalParameter RPAREN block ;
 catchFormalParameter : type ID ;
 finallyBlock : FINALLY block ;
-returnStatement : RETURN (expression | ID | literal)? SEMICOLON ;
-breakStatement : BREAK ID? SEMICOLON ;
-continueStatement : CONTINUE ID? SEMICOLON ;
+returnStatement : RETURN (expression | extendedIDwithThis | literal)? SEMICOLON ;
+breakStatement : BREAK SEMICOLON ;// bez sensu id bo to jest do zaawansowanych etykiet, których nie mamy
+continueStatement : CONTINUE SEMICOLON ; //jak wyżej
 throwStatement : THROW (ID | newInstance) SEMICOLON ;
 
 //Reguły dla wyrażeń
@@ -121,7 +116,7 @@ logicalExpression
     ;
 
 logicalTerm
-    : ID
+    : extendedIDwithThis
     | literal
     | unaryLogicalExpression
     | LPAREN logicalExpression RPAREN
@@ -147,15 +142,13 @@ logicalOperator
 arithmeticExpression : arithmeticTerm
                     | arithmeticExpression arithmeticOperator arithmeticTerm;
 
-arithmeticTerm : ID
-               | literalgit 
+arithmeticTerm : extendedIDwithThis
+               | literal
                | unaryArithmeticExpression
                | LPAREN arithmeticExpression RPAREN
                ;
 
-unaryArithmeticExpression
-    : (ADD | SUB) arithmeticTerm
-    ;
+unaryArithmeticExpression: (ADD | SUB) arithmeticTerm;
 
 arithmeticOperator: ADD
                  | SUB
@@ -164,7 +157,7 @@ arithmeticOperator: ADD
                  | MOD
                  ;
 
-assignmentStatement : type? ID assignmentOperator (ID | literal | newInstance | expression | functionCall) ;
+assignmentStatement : type? extendedIDwithThis assignmentOperator (extendedIDwithThis | literal | newInstance | expression | functionCall) ;
 assignmentOperator : ASSIGN 
                    | ADD_ASSIGN 
                    | SUB_ASSIGN 
@@ -183,15 +176,15 @@ literal : INTEGER_NUMBER
 
 newInstance : NEW (ID | dataStructerDeclaration) LPAREN formalParameters RPAREN;
 
-incrementStatement: ID INCREMENT;
-decrementStatement: ID DECREMENT;
-functionCall: ID LPAREN ID? (COMMA ID)* RPAREN;
+incrementStatement: extendedIDwithThis INCREMENT;
+decrementStatement: extendedIDwithThis DECREMENT;
+functionCall: extendedIDwithThis LPAREN extendedIDwithThis? (COMMA extendedIDwithThis)* RPAREN;
 
 //Reguły dla typów danych
 type : dataType 
      | VOID 
      | dataStructerDeclaration
-     | arrayType 
+     | arrayType // ups, coś nie poszło z tymi tablicami, left recursive
      ;
 
 modifiers : modifier+ ;
@@ -214,6 +207,7 @@ dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
 dataStructerDeclaration: dataStructers LESS_THAN (dataType | ID) GREATER_THAN ID
 ;
 
+//coś źle :(
 arrayType
     : type LSQUARE RSQUARE 
     | type LSQUARE RSQUARE LSQUARE RSQUARE
@@ -235,7 +229,9 @@ inputStatement
     : type ID ASSIGN NEW SCANNER LPAREN expression RPAREN DOT NEXT LPAREN RPAREN SEMICOLON
     ;
 
-extendedID : THIS | ((THIS COMMA)? ID (COMMA ID)*) ;
+extendedIDwithThis : THIS | ((THIS COMMA)? extendedID);
+
+extendedID : ID (COMMA ID)* ;
 
 
 //Tokens
