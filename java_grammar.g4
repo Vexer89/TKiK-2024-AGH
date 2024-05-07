@@ -1,7 +1,7 @@
 grammar java_grammar;
 
 //to do:
-//obsługa list, tablic i słowników
+//ew. tablice ???
 //obsługa print i input
 //ew. obsługa kropek
 
@@ -79,7 +79,7 @@ forInit : assignmentStatement
         | ID
         ;
 forUpdate : (arithmeticExpression | incrementStatement | decrementStatement) ;
-enhancedForControl : type ID COLON expression ;//fix
+enhancedForControl : type ID COLON ID ;
 switchStatement : SWITCH LPAREN ID RPAREN switchBlock ;
 switchBlock : LBRACE (switchBlockStatementGroup)* RBRACE ;
 switchBlockStatementGroup : switchLabel+ block ;
@@ -94,9 +94,6 @@ continueStatement : CONTINUE ID? SEMICOLON ;
 throwStatement : THROW (ID | newInstance) SEMICOLON ;
 
 //Reguły dla wyrażeń
-//fix
-
-//((4 + 4) + 4)
 
 expression : logicalExpression
            | arithmeticExpression
@@ -168,7 +165,7 @@ literal : INTEGER_NUMBER
         | NULL 
         ;
 
-newInstance : NEW ID LPAREN formalParameters RPAREN;
+newInstance : NEW (ID | dataStructerDeclaration) LPAREN formalParameters RPAREN;
 
 incrementStatement: ID INCREMENT;
 decrementStatement: ID DECREMENT;
@@ -177,10 +174,9 @@ functionCall: ID LPAREN ID? (COMMA ID)* RPAREN;
 //Reguły dla typów danych
 type : dataType 
      | VOID 
-     //| referenceType
+     | dataStructerDeclaration
      ;
-//referenceType : NEW? type ID (LESS_THAN typeArguments GREATER_THAN)? (LSQUARE RSQUARE)* ;
-//typeArguments : type (COMMA type)* ;
+
 modifiers : modifier+ ;
 modifier : PUBLIC 
          | PRIVATE 
@@ -198,10 +194,23 @@ classModifier : ABSTRACT
               ;
 dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
 
+dataStructerDeclaration: dataStructers LESS_THAN (dataType | ID) GREATER_THAN ID
+;
+
+
+dataStructers : ARRAYLIST
+              | LINKEDLIST
+              | HASHSET
+              | HASHMAP
+              ;
+
 //Tokens
 
 //Data Structers
-
+ARRAYLIST : 'ArrayList';
+LINKEDLIST : 'LinkedList';
+HASHSET : 'HashSet';
+HASHMAP : 'HashMap';
 
 
 //KeyWords
