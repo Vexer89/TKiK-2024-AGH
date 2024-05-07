@@ -51,6 +51,20 @@ block : LBRACE blockStatement* RBRACE ;
 blockStatement : statement SEMICOLON ;
 variableDeclarators : type (ID (ASSIGN literal)?)+ ;
 
+variableDeclarator
+    : ID
+    | ID ASSIGN expression // przypisanie wartości
+    | ID LSQUARE expression RSQUARE ASSIGN arrayInitializer // inicjalizacja tablicy
+    ;
+
+arrayInitializer
+    : LBRACE (expression (COMMA expression)*)? RBRACE
+    ;
+
+arrayAccess
+    : ID LSQUARE expression RSQUARE
+    ;
+
 // Reguły dla instrukcji
 statement : ifStatement
           | whileStatement
@@ -134,7 +148,7 @@ arithmeticExpression : arithmeticTerm
                     | arithmeticExpression arithmeticOperator arithmeticTerm;
 
 arithmeticTerm : ID
-               | literal
+               | literalgit 
                | unaryArithmeticExpression
                | LPAREN arithmeticExpression RPAREN
                ;
@@ -177,6 +191,7 @@ functionCall: ID LPAREN ID? (COMMA ID)* RPAREN;
 type : dataType 
      | VOID 
      | dataStructerDeclaration
+     | arrayType 
      ;
 
 modifiers : modifier+ ;
@@ -199,6 +214,10 @@ dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
 dataStructerDeclaration: dataStructers LESS_THAN (dataType | ID) GREATER_THAN ID
 ;
 
+arrayType
+    : type LSQUARE RSQUARE 
+    | type LSQUARE RSQUARE LSQUARE RSQUARE
+    ;
 
 dataStructers : ARRAYLIST
               | LINKEDLIST
@@ -271,6 +290,7 @@ TRY : 'try';
 CATCH : 'catch';
 FINALLY : 'finally';
 
+
 NEW : 'new';
 THIS : 'this';
 
@@ -334,6 +354,8 @@ BYTE : 'byte';
 CHAR : 'char';
 BOOLEAN : 'boolean';
 STRING : 'String';
+
+
 
 ID
     :   [a-zA-Z_][a-zA-Z_$0-9]*
