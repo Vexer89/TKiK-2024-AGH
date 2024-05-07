@@ -207,6 +207,7 @@ dataStructers : ARRAYLIST
               ;
 
 
+
 printStatement
     : (PRINT | PRINTLN) LPAREN expression RPAREN SEMICOLON
     ;
@@ -214,6 +215,9 @@ printStatement
 inputStatement
     : type ID ASSIGN NEW SCANNER LPAREN expression RPAREN DOT NEXT LPAREN RPAREN SEMICOLON
     ;
+
+extendedID : THIS | ((THIS COMMA)? ID (COMMA ID)*) ;
+
 
 //Tokens
 
