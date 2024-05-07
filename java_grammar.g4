@@ -67,6 +67,8 @@ statement : ifStatement
           | incrementStatement
           | decrementStatement
           | functionCall
+          | printStatement
+          | inputStatement
           ;
 ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (ID | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
 whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (ID | literal) RPAREN) LBRACE statement RBRACE ;
@@ -204,7 +206,18 @@ dataStructers : ARRAYLIST
               | HASHMAP
               ;
 
+
+
+printStatement
+    : (PRINT | PRINTLN) LPAREN expression RPAREN SEMICOLON
+    ;
+
+inputStatement
+    : type ID ASSIGN NEW SCANNER LPAREN expression RPAREN DOT NEXT LPAREN RPAREN SEMICOLON
+    ;
+
 extendedID : THIS | ((THIS COMMA)? ID (COMMA ID)*) ;
+
 
 //Tokens
 
@@ -244,6 +257,10 @@ IMPLEMENTS : 'implements';
 VOLATAILE : 'volataile';
 THROWS : 'throws';
 
+PRINT : 'System.out.print';
+PRINTLN : 'System.out.println';
+SCANNER : 'Scanner'; 
+NEXT : 'next'; 
 
 TRUE : 'true';
 FALSE : 'false';
