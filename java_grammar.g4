@@ -45,21 +45,6 @@ block : LBRACE blockStatement* RBRACE ;
 blockStatement : statement SEMICOLON ;
 variableDeclarators : type (ID (ASSIGN literal)?)+ ;
 
-//tablice - do przejrzenia
-variableDeclarator // to jest unused
-    : ID
-    | ID ASSIGN expression // przypisanie wartości
-    | ID LSQUARE expression RSQUARE ASSIGN arrayInitializer // inicjalizacja tablicy
-    ;
-
-arrayInitializer
-    : LBRACE (expression (COMMA expression)*)? RBRACE
-    ;
-
-arrayAccess // tez unused
-    : ID LSQUARE expression RSQUARE
-    ;
-
 // Reguły dla instrukcji
 statement : ifStatement
           | whileStatement
@@ -186,7 +171,6 @@ functionCall: extendedIDwithThis LPAREN extendedIDwithThis? (COMMA extendedIDwit
 type : dataType 
      | VOID 
      | dataStructerDeclaration
-     | arrayType // ups, coś nie poszło z tymi tablicami, left recursive
      ;
 
 modifiers : modifier+ ;
@@ -208,12 +192,6 @@ dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
 
 dataStructerDeclaration: dataStructers LESS_THAN (dataType | ID) GREATER_THAN ID
 ;
-
-//coś źle :(
-arrayType
-    : type LSQUARE RSQUARE 
-    | type LSQUARE RSQUARE LSQUARE RSQUARE
-    ;
 
 dataStructers : ARRAYLIST
               | LINKEDLIST
