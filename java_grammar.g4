@@ -7,11 +7,12 @@ program : (importDeclaration | packageDeclaration)* PUBLIC structerDeclaration+ 
 importDeclaration : IMPORT extendedID SEMICOLON ;
 packageDeclaration : PACKAGE extendedID SEMICOLON ;
 
-//Reguły dla klasy i interfejsu
+//Reguły dla klas, enum i interfejsów
 structerDeclaration : classDeclaration
                     | interfaceDeclaration
                     | enumDeclaration;
 
+//Klasa
 classDeclaration : classModifiers? CLASS ID superClass? interfaces? classBody ;
 classBody : LBRACE (classMemberDeclaration)* RBRACE ;
 superClass : EXTENDS ID (COMMA ID)* ;
@@ -22,14 +23,12 @@ classMemberDeclaration : fieldDeclaration
                        | classDeclaration 
                        | interfaceDeclaration
                        ;
-methodDeclaration : modifiers? type ID LPAREN formalParameters? RPAREN throwedExeption? methodBody ;
-throwedExeption : THROWS ID (COMMA ID)*;
 
-fieldDeclaration : modifiers? variableDeclarators SEMICOLON;
-
+//Enum
 enumDeclaration : DEFAULT? ENUM ID enumBody ;
 enumBody : LBRACE ID (COMMA ID)* SEMICOLON (classMemberDeclaration)* RBRACE;
 
+//Interfejs
 interfaceDeclaration : DEFAULT? INTERFACE ID interfaceBody;
 interfaceBody : LBRACE (interfaceMemberDeclaration)* RBRACE;
 interfaceMemberDeclaration : fieldDeclaration 
@@ -37,8 +36,17 @@ interfaceMemberDeclaration : fieldDeclaration
                            | interfaceDeclaration
                            ;
 
+//Atrybuty
+fieldDeclaration : modifiers? variableDeclarators SEMICOLON;
+
+//Metody
+methodDeclaration : modifiers? type ID LPAREN formalParameters? RPAREN throwedExeption? methodBody ;
+throwedExeption : THROWS ID (COMMA ID)*;
+
+
 formalParameters : formalParameter (COMMA formalParameter)* ;
 formalParameter : type ID ;
+
 methodBody : block ;
 block : LBRACE blockStatement* RBRACE ;
 
@@ -87,8 +95,8 @@ catchClause : CATCH LPAREN catchFormalParameter RPAREN block ;
 catchFormalParameter : type ID ;
 finallyBlock : FINALLY block ;
 returnStatement : RETURN (expression | extendedIDwithThis | literal)? SEMICOLON ;
-breakStatement : BREAK SEMICOLON ;// bez sensu id bo to jest do zaawansowanych etykiet, których nie mamy
-continueStatement : CONTINUE SEMICOLON ; //jak wyżej
+breakStatement : BREAK SEMICOLON ;
+continueStatement : CONTINUE SEMICOLON ;
 throwStatement : THROW (ID | newInstance) SEMICOLON ;
 
 //Reguły dla wyrażeń
@@ -144,6 +152,7 @@ arithmeticOperator: ADD
                  | MOD
                  ;
 
+//Przypisania
 assignmentStatement : type? extendedIDwithThis assignmentOperator (extendedIDwithThis | literal | newInstance | expression | functionCall) ;
 assignmentOperator : ASSIGN 
                    | ADD_ASSIGN 
@@ -153,6 +162,7 @@ assignmentOperator : ASSIGN
                    | MOD_ASSIGN
                    ;
 
+//Dane
 literal : INTEGER_NUMBER 
         | FLOAT_NUMBER 
         | STRING 
@@ -161,10 +171,14 @@ literal : INTEGER_NUMBER
         | NULL 
         ;
 
+//Tworzenie nowych obiektów
 newInstance : NEW (ID | dataStructerDeclaration) LPAREN formalParameters RPAREN;
 
+//Inkrementacja, dekrementacja
 incrementStatement: extendedIDwithThis INCREMENT;
 decrementStatement: extendedIDwithThis DECREMENT;
+
+//Wywołanie metody
 functionCall: extendedIDwithThis LPAREN extendedIDwithThis? (COMMA extendedIDwithThis)* RPAREN;
 
 //Reguły dla typów danych
@@ -173,6 +187,9 @@ type : dataType
      | dataStructerDeclaration
      ;
 
+dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
+
+//Modyfikatory
 modifiers : modifier+ ;
 modifier : PUBLIC 
          | PRIVATE 
@@ -188,8 +205,8 @@ classModifier : ABSTRACT
               | DEFAULT
               | FINAL
               ;
-dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
 
+//Struktury danych
 dataStructerDeclaration: dataStructers LESS_THAN (dataType | ID) GREATER_THAN ID
 ;
 
@@ -200,7 +217,7 @@ dataStructers : ARRAYLIST
               ;
 
 
-
+//Obsługa lini komend
 printStatement
     : (PRINT | PRINTLN) LPAREN expression RPAREN SEMICOLON
     ;
@@ -209,6 +226,7 @@ inputStatement
     : type ID ASSIGN NEW SCANNER LPAREN expression RPAREN DOT NEXT LPAREN RPAREN SEMICOLON
     ;
 
+//Identyfikatory
 extendedIDwithThis : THIS | ((THIS COMMA)? extendedID);
 
 extendedID : ID (COMMA ID)* ;
