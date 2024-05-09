@@ -316,8 +316,6 @@ COLON : ':' ;
 SEMICOLON : ';' ;
 DOT : '.' ;
 COMMA : ',' ;
-TERNARY : '?' ;
-THE_DOUBLE_COLON : '::' ;
 
 //data types
 VOID : 'void';
