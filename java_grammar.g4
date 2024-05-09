@@ -63,6 +63,7 @@ arrayAccess // tez unused
 // Reguły dla instrukcji
 statement : ifStatement
           | whileStatement
+          | doWhileStatement
           | forStatement
           | switchStatement
           | tryStatement
@@ -81,6 +82,7 @@ statement : ifStatement
           ;
 ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
 whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE ;
+doWhileStatement : DO LBRACE statement RBRACE WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN);
 forStatement : FOR LPAREN forControl RPAREN LBRACE statement RBRACE ;
 forControl : enhancedForControl 
            | traditionalForControl 
