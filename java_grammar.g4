@@ -197,8 +197,7 @@ modifier : PUBLIC
          | STATIC 
          | FINAL 
          | ABSTRACT 
-         | DEFAULT 
-         | VOLATAILE 
+         | DEFAULT
          ;
 classModifiers : classModifier+ ;
 classModifier : ABSTRACT
@@ -267,7 +266,6 @@ ABSTRACT : 'abstract';
 DEFAULT : 'default';
 EXTENDS : 'extends';
 IMPLEMENTS : 'implements';
-VOLATAILE : 'volataile';
 THROWS : 'throws';
 
 PRINT : 'System.out.print';
