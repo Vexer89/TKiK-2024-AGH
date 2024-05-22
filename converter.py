@@ -11,7 +11,7 @@ class JtoPConverter(java_grammarVisitor):
         for element in ctx.importDeclaration() + ctx.packageDeclaration() + ctx.structerDeclaration():
             result = self.visit(element)
             results.append(result)
-        return "\n".join(results)
+        return "import typing\n import abc\n".join(results)
 
 
 
@@ -53,10 +53,10 @@ def visitStructerDeclaration(self, ctx):
 
 def visitClassDeclaration(self, ctx):
     class_name = ctx.ID().getText()
-    superclass = f"({ctx.superClass().getText()})" if ctx.superClass() else ""
+    superclass = ", ".join(self.visit(superClass))
     interfaces = ", ".join(self.visit(interface) for interface in ctx.interfaces().ID()) if ctx.interfaces() else ""
     members = "\n".join(self.visit(member) for member in ctx.classBody().classMemberDeclaration())
-    return f"class {class_name}{superclass}{interfaces}:\n{members}"
+    return f"class {class_name}{superclass}:\n{members}"
 
 
 def visitInterfaceDeclaration(self, ctx):
