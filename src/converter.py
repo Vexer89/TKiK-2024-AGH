@@ -1,6 +1,6 @@
 from gen.java_grammarLexer import java_grammarLexer
 from gen.java_grammarParser import java_grammarParser
-from gen import java_grammarVisitor
+from gen.java_grammarVisitor import java_grammarVisitor
 from antlr4 import *
 
 
@@ -78,8 +78,8 @@ class JtoPConverter(java_grammarVisitor):
 
 
     def visitFieldDeclaration(self, ctx):
-        type_name = ctx.variableDeclarators().type().getText()
-        variables = ", ".join(self.visit(var) for var in ctx.variableDeclarators().ID())
+        type_name = ctx.variableDeclarators().type_
+        variables = ", ".join(self.visit(var) for var in ctx.variableDeclarators().ID()) if ctx.variableDeclarators().ID() else ""
         return f"{type_name} {variables};"
 
 

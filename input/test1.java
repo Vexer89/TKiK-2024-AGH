@@ -1,12 +1,9 @@
-import java.util.ArrayList;
-import java.util.Scanner;
-
-class Contact {
+public class Contact {
     private String name;
     private String phoneNumber;
     private String email;
 
-    public Contact(String name, String phoneNumber, String email) {
+    public cContact(String name, String phoneNumber, String email) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
