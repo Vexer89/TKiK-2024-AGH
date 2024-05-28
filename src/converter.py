@@ -37,7 +37,7 @@ class JtoPConverter(java_grammarVisitor):
         class_name = ctx.ID().getText()
         superclass = ("(" + ", ".join(self.visit(superclass) for superclass in ctx.superClass().ID()) + ")") if ctx.superClass() else ""
         #interfaces = ", ".join(self.visit(interface) for interface in ctx.interfaces().ID()) if ctx.interfaces() else ""
-        members = "\n".join(self.visit(member) for member in ctx.classBody().classMemberDeclaration())
+        members = "\n\t".join(self.visit(member) for member in ctx.classBody().classMemberDeclaration())
         return f"class {class_name}{superclass}:\n{members}"
 
 
@@ -76,12 +76,20 @@ class JtoPConverter(java_grammarVisitor):
         elif ctx.interfaceDeclaration():
             return self.visit(ctx.interfaceDeclaration())
 
-
     def visitFieldDeclaration(self, ctx):
-        type_name = ctx.variableDeclarators().type_
-        variables = ", ".join(self.visit(var) for var in ctx.variableDeclarators().ID()) if ctx.variableDeclarators().ID() else ""
-        return f"{type_name} {variables};"
+        if ctx.modifiers():
+            return " ".join(self.visit(element)for element in ctx.modifiers() + ctx.variableDeclarators())
+        else:
+            return self.visit(ctx.variableDeclarators())
 
+
+    def visitModifiers(self, ctx):
+        return ""
+
+    def visitVariableDeclarators(self, ctx):
+        type = self.visit(ctx.type_())
+        variables = ", ".join(id.getText() for id in ctx.ID())
+        return f"{type} {variables}"
 
     def visitMethodDeclaration(self, ctx):
         method_name = ctx.ID().getText()
@@ -115,10 +123,6 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitBlockStatement(self, ctx):
         return self.visit(ctx.statement())
-
-
-    def visitVariableDeclarators(self, ctx):
-        return ", ".join(self.visit(decl) for decl in ctx.ID())
 
 
     def visitIfStatement(self, ctx):
@@ -361,6 +365,7 @@ class JtoPConverter(java_grammarVisitor):
         id_name = ctx.ID().getText()
         expression = self.visit(ctx.expression())
         return f"{type_name} {id_name} = {ctx.SCANNER().getText()}({expression}).{ctx.NEXT().getText()}();"
+
 
 
 
