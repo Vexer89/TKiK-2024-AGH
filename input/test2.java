@@ -1,8 +1,6 @@
 public class Test{
-    int nazwa = 1;
-    string nazwa2;
-    private zmienna3;
+    String nazwa;
+    int abc;
+    boolean cdf;
 }
 
-class test2{
-}

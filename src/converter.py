@@ -37,8 +37,8 @@ class JtoPConverter(java_grammarVisitor):
         class_name = ctx.ID().getText()
         superclass = ("(" + ", ".join(self.visit(superclass) for superclass in ctx.superClass().ID()) + ")") if ctx.superClass() else ""
         #interfaces = ", ".join(self.visit(interface) for interface in ctx.interfaces().ID()) if ctx.interfaces() else ""
-        members = "\n\t".join(self.visit(member) for member in ctx.classBody().classMemberDeclaration())
-        return f"class {class_name}{superclass}:\n{members}"
+        class_body = self.visit(ctx.classBody())
+        return f"class {class_name}{superclass}: \n {class_body}"
 
 
     def visitInterfaceDeclaration(self, ctx):
@@ -63,7 +63,11 @@ class JtoPConverter(java_grammarVisitor):
 
 
     def visitClassBody(self, ctx):
-        return "\n".join(self.visit(member) for member in ctx.classMemberDeclaration())
+        members = []
+        for member_node in ctx.classMemberDeclaration():
+            member = self.visit(member_node)
+            members.append(member)
+        return "\n".join(members)
 
 
     def visitClassMemberDeclaration(self, ctx):
@@ -78,18 +82,19 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitFieldDeclaration(self, ctx):
         if ctx.modifiers():
-            return " ".join(self.visit(element)for element in ctx.modifiers() + ctx.variableDeclarators())
+            return "\t" + " ".join(self.visit(element) for element in ctx.modifiers() + ctx.variableDeclarators())
         else:
-            return self.visit(ctx.variableDeclarators())
+            return "\t" + self.visit(ctx.variableDeclarators())
 
 
     def visitModifiers(self, ctx):
         return ""
 
     def visitVariableDeclarators(self, ctx):
-        type = self.visit(ctx.type_())
-        variables = ", ".join(id.getText() for id in ctx.ID())
-        return f"{type} {variables}"
+        if ctx.ASSIGN():
+            variables = ", ".join(id.getText() for id in ctx.ID())
+
+            return f"{variables} = "
 
     def visitMethodDeclaration(self, ctx):
         method_name = ctx.ID().getText()

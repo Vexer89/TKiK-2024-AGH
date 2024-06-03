@@ -1,3 +1,4 @@
-class Test:
-int nazwa
-class test2:
+class Test: 
+ 	nazwa
+	abc
+	cdf
