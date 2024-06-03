@@ -98,5 +98,63 @@ class Dog(Animal):
     # ...
 ```
 
-### 
+### Atrybuty
+```java 
+public class Test{
+    public int number;
+    protected double quantity = 0;
+    private string name;
+}
+```
+zostanie przetłumaczone na
+```python
+    class Test:
+        def __init__(self):
+            self.number = None          
+            self._quantity = 0.0        
+            self.__name = None
+```
 
+### Atrybuty static
+```java 
+public class Test {
+    public static int instances = 0;
+}
+```
+przetłumaczone zostanie na
+```python
+class Test:
+    instances = 0
+```
+
+## Metody
+```java
+public int add(int a, int b) {
+    return a + b;
+}
+```
+```python
+def add(a, b):
+    return a + b
+```
+
+### Metody abstrakcyjne
+```java 
+public abstract class Animal {
+    abstract void makeSound();
+    abstract void move();
+}
+```
+zostanie przetłumaczony na
+```python
+from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    @abstractmethod
+    def makeSound(self):
+        pass
+
+    @abstractmethod
+    def move(self):
+        pass
+```
