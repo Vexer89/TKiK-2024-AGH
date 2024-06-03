@@ -63,7 +63,7 @@ class JtoPConverter(java_grammarVisitor):
         self.file.structs.append(new_class)
 
     def visitClassModifiers(self, ctx):
-        return ctx.getText()
+        return ctx.getText() #fegv
     def visitModifier(self, ctx):
         return ctx.getText()
 
