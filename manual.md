@@ -66,19 +66,7 @@ class Day(Enum):
 
 ### Klasy abstract
 Będzie to wyglądać identycznie jak w przypadku interfejsów.
-### Klasy final
-```java 
-public final class Animal {
-    // ...
-}
-```
-zostanie zamienione poprzez użycie konstrukcji w konstruktorze uniemożliwiającej dziedziczenie.
-```python
-class Animal:
-    def __init__(self):
-        if type(self) is not Animal:
-            raise TypeError('Subclassing not allowed')
-```
+
 
 ### Dziedziczenie i interfejsy
 ```java 

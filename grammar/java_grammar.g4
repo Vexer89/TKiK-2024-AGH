@@ -40,7 +40,7 @@ interfaceMemberDeclaration : fieldDeclaration
 fieldDeclaration : modifiers? variableDeclarators SEMICOLON;
 
 //Metody
-methodDeclaration : modifiers? type ID LPAREN formalParameters? RPAREN throwedExeption? methodBody ;
+methodDeclaration : modifiers? ABSTRACT? type ID LPAREN formalParameters? RPAREN throwedExeption? methodBody ;
 throwedExeption : THROWS ID (COMMA ID)*;
 
 
@@ -194,15 +194,12 @@ modifiers : modifier+ ;
 modifier : PUBLIC 
          | PRIVATE 
          | PROTECTED
-         | STATIC 
-         | FINAL 
-         | ABSTRACT 
+         | STATIC
          | DEFAULT
          ;
 classModifiers : classModifier+ ;
 classModifier : ABSTRACT
               | DEFAULT
-              | FINAL
               ;
 
 //Struktury danych
@@ -229,6 +226,12 @@ inputStatement
 extendedIDwithThis : THIS | ((THIS COMMA)? extendedID);
 
 extendedID : ID (COMMA ID)* ;
+
+//comments: comment+;
+
+//comment: BLOCKCOMMENT
+//       | SINGLELINECOMMENT;
+
 
 
 //Tokens
@@ -261,7 +264,6 @@ PUBLIC : 'public';
 PRIVATE : 'private';
 PROTECTED : 'protected';
 STATIC : 'static';
-FINAL : 'final';
 ABSTRACT : 'abstract';
 DEFAULT : 'default';
 EXTENDS : 'extends';
@@ -386,3 +388,5 @@ BLOCKCOMMENT
 SINGLELINECOMMENT
     :   '//' ~[\r\n]* -> skip
     ;
+
+//NEWLINE : '\r'? '\n';
