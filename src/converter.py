@@ -63,9 +63,25 @@ class JtoPConverter(java_grammarVisitor):
         self.file.structs.append(new_class)
 
     def visitClassModifiers(self, ctx):
-        return ctx.getText() #fegv
+        arr = []
+        if "abstract" in ctx.getText():
+            arr.append("abstract")
+        if "default" in ctx.getText():
+            arr.append("default")
+        return arr
     def visitModifier(self, ctx):
-        return ctx.getText()
+        arr = []
+        if "public" in ctx.getText():
+            arr.append("public")
+        if "private" in ctx.getText():
+            arr.append("private")
+        if "protected" in ctx.getText():
+            arr.append("protected")
+        if "static" in ctx.getText():
+            arr.append("static")
+        if "default" in ctx.getText():
+            arr.append("default")
+        return arr
 
 
     def visitInterfaceDeclaration(self, ctx):
