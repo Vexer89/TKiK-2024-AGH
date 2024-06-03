@@ -4,10 +4,11 @@ class File:
         self.structs = []
 
 class Struct:
-    def __init__(self, st_type, visibility, is_abstract):
-        self.st_type = st_type
-        self.visibility = visibility
+    def __init__(self, name, is_abstract, is_interface):
+        self.name = name
         self.is_abstract = is_abstract
+        self.is_interface = is_interface
+        self.parents = []
         self.instance_fields = []
         self.static_fields = []
         self.methods = []

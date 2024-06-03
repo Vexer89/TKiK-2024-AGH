@@ -2,26 +2,25 @@ from gen.java_grammarLexer import java_grammarLexer
 from gen.java_grammarParser import java_grammarParser
 from gen.java_grammarVisitor import java_grammarVisitor
 from antlr4 import *
+import file
 
 
 class JtoPConverter(java_grammarVisitor):
+    def __init__(self):
+        self.file = file.File()
 
     def visitProgram(self, ctx):
-        results = []
         for element in ctx.importDeclaration() + ctx.packageDeclaration() + ctx.structerDeclaration():
-            result = self.visit(element)
-            results.append(result)
-        return "\n".join(results)
+            self.visit(element)
 
 
     def visitImportDeclaration(self, ctx):
         import_name = ctx.extendedID().getText()
-        return f"import {import_name}"
+        self.file.imports[import_name] = None
 
 
     def visitPackageDeclaration(self, ctx):
-        package_name = ctx.extendedID().getText()
-        return f"# package {package_name}"
+        pass
 
 
     def visitStructerDeclaration(self, ctx):
@@ -35,10 +34,38 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitClassDeclaration(self, ctx):
         class_name = ctx.ID().getText()
-        superclass = ("(" + ", ".join(self.visit(superclass) for superclass in ctx.superClass().ID()) + ")") if ctx.superClass() else ""
-        #interfaces = ", ".join(self.visit(interface) for interface in ctx.interfaces().ID()) if ctx.interfaces() else ""
+        if ctx.classModifiers():
+            modifiers = self.visit(ctx.classModifiers()) #todo: naprawic modifiery
+            print(modifiers)
+        else:
+            modifiers = []
+
+        if "abstract" in modifiers:
+            is_abstract = True
+        else:
+            is_abstract = False
+
+        new_class = file.Struct(class_name, is_abstract, False)
+
+        if ctx.superClass():
+            super_classes = self.visit(ctx.superClass())
+        else:
+            super_classes = []
+
+        if ctx.interfaces():
+            interfaces = self.visit(ctx.interfaces())
+        else:
+            interfaces = []
+
+        new_class.parents.append(super_classes + interfaces)
+
         class_body = self.visit(ctx.classBody())
-        return f"class {class_name}{superclass}: \n {class_body}"
+        self.file.structs.append(new_class)
+
+    def visitClassModifiers(self, ctx):
+        return ctx.getText()
+    def visitModifier(self, ctx):
+        return ctx.getText()
 
 
     def visitInterfaceDeclaration(self, ctx):
@@ -55,12 +82,17 @@ class JtoPConverter(java_grammarVisitor):
 
 
     def visitSuperClass(self, ctx):
-        return ctx.getText()
+        names = []
+        for name in ctx.ID():
+            names.append(name.getText())
+        return names
 
 
     def visitInterfaces(self, ctx):
-        return ", ".join(ctx.ID().getText() for id in ctx.ID())
-
+        names = []
+        for name in ctx.ID():
+            names.append(name.getText())
+        return names
 
     def visitClassBody(self, ctx):
         members = []
@@ -383,6 +415,6 @@ def convert(input_text):
     tree = parser.program()
 
     converter = JtoPConverter()
-    result = converter.visit(tree)
+    converter.visit(tree)
 
-    return result
+    return "0"

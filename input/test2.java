@@ -1,6 +1,4 @@
-public class Test{
-    String nazwa;
-    int abc;
-    boolean cdf;
+public abstract default class Test implements Test2 {
+
 }
 

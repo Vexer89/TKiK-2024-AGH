@@ -1,4 +1,1 @@
-class Test: 
- 	nazwa
-	abc
-	cdf
+0
