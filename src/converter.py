@@ -36,7 +36,6 @@ class JtoPConverter(java_grammarVisitor):
         class_name = ctx.ID().getText()
         if ctx.classModifiers():
             modifiers = self.visit(ctx.classModifiers())
-            print(modifiers)
         else:
             modifiers = []
 
@@ -165,13 +164,11 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitVariableDeclarators(self, ctx):
         field_name = ctx.ID().getText()
-        print(field_name)
 
         if ctx.ASSIGN():
             field_value = ctx.literal().getText()
         else:
             field_value = None
-        print(field_value)
 
         new_field = file.Field(field_name, None, field_value, False)
 
@@ -183,23 +180,53 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitMethodDeclaration(self, ctx):
         method_name = ctx.ID().getText()
-        params = self.visit(ctx.formalParameters()) if ctx.formalParameters() else ""
-        body = self.visit(ctx.methodBody())
-        return f"def {method_name}({params}):\n{body}"
+        params = self.visit(ctx.formalParameters()) if ctx.formalParameters() else []
+
+        if ctx.ABSTRACT():
+            is_abstract = True
+        else:
+            is_abstract = False
+
+        modifiers = []
+        if ctx.modifiers():
+            for element in self.visit(ctx.modifiers()):
+                modifiers.append(element)
+
+        if "public" in modifiers:
+            visibility = 'public'
+        elif "private" in modifiers:
+            visibility = 'private'
+        elif "protected" in modifiers:
+            visibility = 'protected'
+        else:
+            visibility = 'public'
+
+        if "static" in modifiers:
+            is_static = True
+        else:
+            is_static = False
+
+        body = ""
+
+        new_method = file.Method(method_name, visibility, is_abstract, is_static, params, body)
+
+        return new_method
 
 
     def visitThrowedExeption(self, ctx):
-        return ", ".join(ctx.ID().getText() for id in ctx.ID())
+        pass
 
 
     def visitFormalParameters(self, ctx):
-        return ", ".join(self.visit(param) for param in ctx.formalParameter())
+        params = []
+        for param in ctx.formalParameter():
+            params.append(param)
+        return params
 
 
     def visitFormalParameter(self, ctx):
-        type_name = ctx.type().getText()
         param_name = ctx.ID().getText()
-        return f"{type_name} {param_name}"
+        return param_name
 
 
     def visitMethodBody(self, ctx):

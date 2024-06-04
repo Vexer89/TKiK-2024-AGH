@@ -32,12 +32,12 @@ class Field:
 
 
 class Method:
-    def __init__(self, return_type, name, visibility, is_abstract, body):
-        self.return_type = return_type
+    def __init__(self, name, visibility, is_abstract, is_static, params, body):
         self.name = name
         self.visibility = visibility
         self.is_abstract = is_abstract
-        self.params = []
+        self.is_static = is_static
+        self.params = params
         self.body = body
 
         
