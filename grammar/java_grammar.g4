@@ -64,14 +64,14 @@ statement : ifStatement
           | breakStatement
           | continueStatement
           | throwStatement
-          | expression
+          | expression SEMICOLON
           | block
-          | assignmentStatement
-          | incrementStatement
-          | decrementStatement
-          | functionCall
-          | printStatement
-          | inputStatement
+          | assignmentStatement SEMICOLON
+          | incrementStatement SEMICOLON
+          | decrementStatement SEMICOLON
+          | functionCall SEMICOLON
+          | printStatement SEMICOLON
+          | inputStatement SEMICOLON
           ;
 ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
 whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE ;

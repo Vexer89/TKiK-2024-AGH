@@ -3,6 +3,7 @@ from gen.java_grammarParser import java_grammarParser
 from gen.java_grammarVisitor import java_grammarVisitor
 from antlr4 import *
 import file
+import builder
 
 
 class JtoPConverter(java_grammarVisitor):
@@ -12,6 +13,7 @@ class JtoPConverter(java_grammarVisitor):
     def visitProgram(self, ctx):
         for element in ctx.importDeclaration() + ctx.packageDeclaration() + ctx.structerDeclaration():
             self.visit(element)
+        return self.file
 
 
     def visitImportDeclaration(self, ctx):
@@ -495,6 +497,6 @@ def convert(input_text):
     tree = parser.program()
 
     converter = JtoPConverter()
-    converter.visit(tree)
-
-    return "0"
+    file_obj = converter.visit(tree)
+    new_builder = builder.PythonFileBuilder(file_obj)
+    return new_builder.build()
