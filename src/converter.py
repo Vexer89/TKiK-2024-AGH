@@ -19,6 +19,7 @@ class JtoPConverter(java_grammarVisitor):
     def visitImportDeclaration(self, ctx):
         import_name = ctx.extendedID().getText()
         self.file.imports[import_name] = None
+        print(self.file.imports)
 
 
     def visitPackageDeclaration(self, ctx):

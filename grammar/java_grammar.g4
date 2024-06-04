@@ -73,10 +73,10 @@ statement : ifStatement
           | printStatement
           | inputStatement
           ;
-ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
-whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE ;
-doWhileStatement : DO LBRACE statement RBRACE WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN);
-forStatement : FOR LPAREN forControl RPAREN LBRACE statement RBRACE ;
+ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE (ELSE statement+)?;
+whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE ;
+doWhileStatement : DO LBRACE statement+ RBRACE WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN);
+forStatement : FOR LPAREN forControl RPAREN LBRACE statement+ RBRACE ;
 forControl : enhancedForControl 
            | traditionalForControl 
            ;
@@ -88,7 +88,7 @@ forUpdate : (arithmeticExpression | incrementStatement | decrementStatement) ;
 enhancedForControl : type ID COLON extendedIDwithThis ;
 switchStatement : SWITCH LPAREN extendedIDwithThis RPAREN switchBlock ;
 switchBlock : LBRACE (switchBlockStatementGroup)* RBRACE ;
-switchBlockStatementGroup : switchLabel+ block ;
+switchBlockStatementGroup : switchLabel+ statement+ ;
 switchLabel : CASE literal COLON | DEFAULT COLON ;
 tryStatement : TRY block (catchClause+ finallyBlock? | finallyBlock) ;
 catchClause : CATCH LPAREN catchFormalParameter RPAREN block ;
@@ -186,6 +186,7 @@ functionCall: extendedIDwithThis LPAREN extendedIDwithThis? (COMMA extendedIDwit
 type : dataType 
      | VOID 
      | dataStructerDeclaration
+     | extendedID
      ;
 
 dataType : INT | FLOAT | DOUBLE | LONG | SHORT | BYTE | CHAR | BOOLEAN | STRING;
@@ -224,9 +225,9 @@ inputStatement
     ;
 
 //Identyfikatory
-extendedIDwithThis : THIS | ((THIS COMMA)? extendedID);
+extendedIDwithThis : THIS | ((THIS DOT)? extendedID);
 
-extendedID : ID (COMMA ID)* ;
+extendedID : ID (DOT ID)* ;
 
 //comments: comment+;
 
