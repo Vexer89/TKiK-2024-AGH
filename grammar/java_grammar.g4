@@ -70,8 +70,8 @@ statement : ifStatement
           | incrementStatement SEMICOLON
           | decrementStatement SEMICOLON
           | functionCall SEMICOLON
-          | printStatement SEMICOLON
-          | inputStatement SEMICOLON
+          | printStatement
+          | inputStatement
           ;
 ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE (ELSE statement)?;
 whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement RBRACE ;
