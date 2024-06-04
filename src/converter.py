@@ -9,6 +9,14 @@ import builder
 class JtoPConverter(java_grammarVisitor):
     def __init__(self):
         self.file = file.File()
+        self.indentation_level = 0
+
+    def increase_indentation(self):
+        self.indentation_level += 1
+
+    def decrease_indentation(self):
+        self.indentation_level -= 1
+
 
     def visitProgram(self, ctx):
         for element in ctx.importDeclaration() + ctx.packageDeclaration() + ctx.structerDeclaration():
@@ -47,7 +55,7 @@ class JtoPConverter(java_grammarVisitor):
         else:
             is_abstract = False
 
-        new_class = file.Struct(class_name, is_abstract, False)
+        new_class = file.Struct(class_name, is_abstract, False, self.indentation_level)
 
         if ctx.superClass():
             super_classes = self.visit(ctx.superClass())
@@ -91,7 +99,7 @@ class JtoPConverter(java_grammarVisitor):
     def visitInterfaceDeclaration(self, ctx):
         interface_name = ctx.ID().getText()
         self.file.imports["abc"] = "ABC, abstractmethod"
-        new_interface = file.Struct(interface_name, False, True)
+        new_interface = file.Struct(interface_name, False, True, self.indentation_level)
 
         for member in self.visit(ctx.interfaceBody()):
             new_interface.members.append(member)
@@ -101,7 +109,7 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitEnumDeclaration(self, ctx):
         enum_name = ctx.ID().getText()
-        new_enum = file.Enum(enum_name)
+        new_enum = file.Enum(enum_name, self.indentation_level)
 
         for name in ctx.enumBody().ID():
             new_enum.options.append(name)
@@ -125,6 +133,7 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitClassBody(self, ctx):
         members = []
+        self.increase_indentation()
         for member_node in ctx.classMemberDeclaration():
             member = self.visit(member_node)
             members.append(member)
@@ -173,7 +182,7 @@ class JtoPConverter(java_grammarVisitor):
         else:
             field_value = None
 
-        new_field = file.Field(field_name, None, field_value, False)
+        new_field = file.Field(field_name, None, field_value, False, self.indentation_level)
 
         return new_field
 
@@ -211,7 +220,7 @@ class JtoPConverter(java_grammarVisitor):
 
         body = ""
 
-        new_method = file.Method(method_name, visibility, is_abstract, is_static, params, body)
+        new_method = file.Method(method_name, visibility, is_abstract, is_static, params, body, self.indentation_level)
 
         return new_method
 
@@ -233,6 +242,7 @@ class JtoPConverter(java_grammarVisitor):
 
 
     def visitMethodBody(self, ctx):
+        self.increase_indentation()
         return self.visit(ctx.block())
 
 

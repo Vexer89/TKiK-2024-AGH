@@ -1,5 +1,18 @@
-import abc;
-public abstract default class Test implements Test2 {
-    public int zmienna = 10;
+public class SwitchCaseExample {
+    public void checkDay(int dayOfWeek) {
+        switch (dayOfWeek) {
+            case 1:
+                System.out.println("Monday");
+                break;
+            case 2:
+                System.out.println("Tuesday");
+                break;
+            case 3:
+                System.out.println("Wednesday");
+                break;
+            default:
+                System.out.println("Other day");
+                break;
+        }
+    }
 }
-

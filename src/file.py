@@ -1,5 +1,6 @@
 class File:
     def __init__(self):
+        
         self.imports = {}
         self.structs = []
         
