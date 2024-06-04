@@ -51,7 +51,7 @@ methodBody : block ;
 block : LBRACE blockStatement* RBRACE ;
 
 blockStatement : statement SEMICOLON ;
-variableDeclarators : type (ID (ASSIGN literal)?)+ ;
+variableDeclarators : type ID (ASSIGN literal)? ;
 
 // Reguły dla instrukcji
 statement : ifStatement

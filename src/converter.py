@@ -59,7 +59,9 @@ class JtoPConverter(java_grammarVisitor):
 
         new_class.parents.append(super_classes + interfaces)
 
-        class_body = self.visit(ctx.classBody())
+        for member in self.visit(ctx.classBody()):
+            new_class.members.append(member)
+
         self.file.structs.append(new_class)
 
     def visitClassModifiers(self, ctx):
@@ -88,6 +90,9 @@ class JtoPConverter(java_grammarVisitor):
         interface_name = ctx.ID().getText()
         self.file.imports["abc"] = "ABC, abstractmethod"
         new_interface = file.Struct(interface_name, False, True)
+
+        for member in self.visit(ctx.interfaceBody()):
+            new_interface.members.append(member)
 
         self.file.structs.append(new_interface)
 
@@ -121,7 +126,7 @@ class JtoPConverter(java_grammarVisitor):
         for member_node in ctx.classMemberDeclaration():
             member = self.visit(member_node)
             members.append(member)
-        return "\n".join(members)
+        return members
 
 
     def visitClassMemberDeclaration(self, ctx):
@@ -135,20 +140,46 @@ class JtoPConverter(java_grammarVisitor):
             return self.visit(ctx.interfaceDeclaration())
 
     def visitFieldDeclaration(self, ctx):
+        new_field = self.visit(ctx.variableDeclarators())
+        modifiers = []
         if ctx.modifiers():
-            return "\t" + " ".join(self.visit(element) for element in ctx.modifiers() + ctx.variableDeclarators())
-        else:
-            return "\t" + self.visit(ctx.variableDeclarators())
+            for element in self.visit(ctx.modifiers()):
+                modifiers.append(element)
+
+        if "public" in modifiers:
+            new_field.visibility = 'public'
+        elif "private" in modifiers:
+            new_field.visibility = 'private'
+        elif "protected" in modifiers:
+            new_field.visibility = 'protected'
+
+        if "static" in modifiers:
+            new_field.is_static = True
+
+        return new_field
+
 
 
     def visitModifiers(self, ctx):
-        return ""
+        return ctx.modifier()
 
     def visitVariableDeclarators(self, ctx):
-        if ctx.ASSIGN():
-            variables = ", ".join(id.getText() for id in ctx.ID())
+        field_name = ctx.ID().getText()
+        print(field_name)
 
-            return f"{variables} = "
+        if ctx.ASSIGN():
+            field_value = ctx.literal().getText()
+        else:
+            field_value = None
+        print(field_value)
+
+        new_field = file.Field(field_name, None, field_value, False)
+
+        return new_field
+
+
+
+
 
     def visitMethodDeclaration(self, ctx):
         method_name = ctx.ID().getText()

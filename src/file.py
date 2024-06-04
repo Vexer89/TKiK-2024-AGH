@@ -9,10 +9,11 @@ class Struct:
         self.is_abstract = is_abstract
         self.is_interface = is_interface
         self.parents = []
-        self.instance_fields = []
-        self.static_fields = []
-        self.methods = []
-        self.structs = []
+        self.members = []
+        #self.instance_fields = []
+        #self.static_fields = []
+        #self.methods = []
+        #self.structs = []
 
 class Enum:
     def __init__(self, name):
@@ -22,10 +23,11 @@ class Enum:
 
         
 class Field:
-    def __init__(self, name, visibility, value):
+    def __init__(self, name, visibility, value, is_static):
         self.name = name
         self.visibility = visibility
         self.value = value
+        self.is_static = is_static
 
 
 
