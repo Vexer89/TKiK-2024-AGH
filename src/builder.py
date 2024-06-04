@@ -27,6 +27,13 @@ class PythonFileBuilder:
                 result += elements
 
             elif type(struct) == file.Struct:
-                result += f"class {struct.name}:"
+
+                if struct.is_abstract or struct.is_interface:
+                    struct.parents.append("ABC")
+                result += f"class {struct.name}({', '.join(struct.parents)}):"
+
+                
+                for member in struct.members:
+                    if
 
         return result
