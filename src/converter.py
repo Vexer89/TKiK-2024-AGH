@@ -35,7 +35,7 @@ class JtoPConverter(java_grammarVisitor):
     def visitClassDeclaration(self, ctx):
         class_name = ctx.ID().getText()
         if ctx.classModifiers():
-            modifiers = self.visit(ctx.classModifiers()) #todo: naprawic modifiery
+            modifiers = self.visit(ctx.classModifiers())
             print(modifiers)
         else:
             modifiers = []
@@ -86,15 +86,21 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitInterfaceDeclaration(self, ctx):
         interface_name = ctx.ID().getText()
-        members = "\n".join(self.visit(member) for member in ctx.interfaceBody().interfaceMemberDeclaration())
-        return f"class {interface_name}:\n{members}"
+        self.file.imports["abc"] = "ABC, abstractmethod"
+        new_interface = file.Struct(interface_name, False, True)
+
+        self.file.structs.append(new_interface)
 
 
     def visitEnumDeclaration(self, ctx):
         enum_name = ctx.ID().getText()
-        enum_constants = ", ".join(ctx.enumBody().ID())
-        members = "\n".join(self.visit(member) for member in ctx.enumBody().classMemberDeclaration())
-        return f"enum {enum_name}({enum_constants}):\n{members}"
+        new_enum = file.Enum(enum_name)
+
+        for name in ctx.enumBody().ID():
+            new_enum.options.append(name)
+
+        self.file.structs.append(new_enum)
+
 
 
     def visitSuperClass(self, ctx):
