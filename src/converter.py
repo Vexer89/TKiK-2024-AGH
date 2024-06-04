@@ -132,6 +132,7 @@ class JtoPConverter(java_grammarVisitor):
         for member_node in ctx.classMemberDeclaration():
             member = self.visit(member_node)
             members.append(member)
+        self.decrease_indentation()
         return members
 
     def visitClassMemberDeclaration(self, ctx):
@@ -231,9 +232,11 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitBlock(self, ctx):
         statements = "\n".join(self.visit(stmt) for stmt in ctx.blockStatement())
+        self.decrease_indentation()
         return f"{{\n{statements}\n}}"
 
     def visitBlockStatement(self, ctx):
+        self.increase_indentation()
         return self.visit(ctx.statement())
 
     def visitIfStatement(self, ctx):
