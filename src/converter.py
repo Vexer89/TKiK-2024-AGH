@@ -17,22 +17,18 @@ class JtoPConverter(java_grammarVisitor):
     def decrease_indentation(self):
         self.indentation_level -= 1
 
-
     def visitProgram(self, ctx):
         for element in ctx.importDeclaration() + ctx.packageDeclaration() + ctx.structerDeclaration():
             self.visit(element)
         return self.file
-
 
     def visitImportDeclaration(self, ctx):
         import_name = ctx.extendedID().getText()
         self.file.imports[import_name] = None
         print(self.file.imports)
 
-
     def visitPackageDeclaration(self, ctx):
         pass
-
 
     def visitStructerDeclaration(self, ctx):
         if ctx.classDeclaration():
@@ -41,7 +37,6 @@ class JtoPConverter(java_grammarVisitor):
             return self.visit(ctx.interfaceDeclaration())
         elif ctx.enumDeclaration():
             return self.visit(ctx.enumDeclaration())
-
 
     def visitClassDeclaration(self, ctx):
         class_name = ctx.ID().getText()
@@ -62,12 +57,16 @@ class JtoPConverter(java_grammarVisitor):
         else:
             super_classes = []
 
+        print(super_classes)
+
         if ctx.interfaces():
             interfaces = self.visit(ctx.interfaces())
         else:
             interfaces = []
 
-        new_class.parents.append(super_classes + interfaces)
+        print(interfaces)
+
+        new_class.parents = super_classes + interfaces
 
         for member in self.visit(ctx.classBody()):
             new_class.members.append(member)
@@ -81,6 +80,7 @@ class JtoPConverter(java_grammarVisitor):
         if "default" in ctx.getText():
             arr.append("default")
         return arr
+
     def visitModifier(self, ctx):
         arr = []
         if "public" in ctx.getText():
@@ -95,7 +95,6 @@ class JtoPConverter(java_grammarVisitor):
             arr.append("default")
         return arr
 
-
     def visitInterfaceDeclaration(self, ctx):
         interface_name = ctx.ID().getText()
         self.file.imports["abc"] = "ABC, abstractmethod"
@@ -106,7 +105,6 @@ class JtoPConverter(java_grammarVisitor):
 
         self.file.structs.append(new_interface)
 
-
     def visitEnumDeclaration(self, ctx):
         enum_name = ctx.ID().getText()
         new_enum = file.Enum(enum_name, self.indentation_level)
@@ -116,14 +114,11 @@ class JtoPConverter(java_grammarVisitor):
 
         self.file.structs.append(new_enum)
 
-
-
     def visitSuperClass(self, ctx):
         names = []
         for name in ctx.ID():
             names.append(name.getText())
         return names
-
 
     def visitInterfaces(self, ctx):
         names = []
@@ -138,7 +133,6 @@ class JtoPConverter(java_grammarVisitor):
             member = self.visit(member_node)
             members.append(member)
         return members
-
 
     def visitClassMemberDeclaration(self, ctx):
         if ctx.fieldDeclaration():
@@ -155,8 +149,8 @@ class JtoPConverter(java_grammarVisitor):
         modifiers = []
         if ctx.modifiers():
             for element in self.visit(ctx.modifiers()):
-                modifiers.append(element)
-
+                modifiers.append(element.getText())
+        print(modifiers)
         if "public" in modifiers:
             new_field.visibility = 'public'
         elif "private" in modifiers:
@@ -168,8 +162,6 @@ class JtoPConverter(java_grammarVisitor):
             new_field.is_static = True
 
         return new_field
-
-
 
     def visitModifiers(self, ctx):
         return ctx.modifier()
@@ -185,10 +177,6 @@ class JtoPConverter(java_grammarVisitor):
         new_field = file.Field(field_name, None, field_value, False, self.indentation_level)
 
         return new_field
-
-
-
-
 
     def visitMethodDeclaration(self, ctx):
         method_name = ctx.ID().getText()
@@ -224,10 +212,8 @@ class JtoPConverter(java_grammarVisitor):
 
         return new_method
 
-
     def visitThrowedExeption(self, ctx):
         pass
-
 
     def visitFormalParameters(self, ctx):
         params = []
@@ -235,25 +221,20 @@ class JtoPConverter(java_grammarVisitor):
             params.append(param)
         return params
 
-
     def visitFormalParameter(self, ctx):
         param_name = ctx.ID().getText()
         return param_name
-
 
     def visitMethodBody(self, ctx):
         self.increase_indentation()
         return self.visit(ctx.block())
 
-
     def visitBlock(self, ctx):
         statements = "\n".join(self.visit(stmt) for stmt in ctx.blockStatement())
         return f"{{\n{statements}\n}}"
 
-
     def visitBlockStatement(self, ctx):
         return self.visit(ctx.statement())
-
 
     def visitIfStatement(self, ctx):
         condition = self.visit(ctx.logicalExpression() or ctx.arithmeticExpression())
@@ -261,31 +242,26 @@ class JtoPConverter(java_grammarVisitor):
         else_block = f"\nelse:\n{self.visit(ctx.statement(1))}" if ctx.statement(1) else ""
         return f"if {condition}:\n{then_block}{else_block}"
 
-
     def visitWhileStatement(self, ctx):
         condition = self.visit(ctx.logicalExpression() or ctx.arithmeticExpression())
         body = self.visit(ctx.statement())
         return f"while {condition}:\n{body}"
-
 
     def visitDoWhileStatement(self, ctx):
         body = self.visit(ctx.statement())
         condition = self.visit(ctx.logicalExpression() or ctx.arithmeticExpression())
         return f"do:\n{body}\nwhile {condition};"
 
-
     def visitForStatement(self, ctx):
         control = self.visit(ctx.forControl())
         body = self.visit(ctx.statement())
         return f"for {control}:\n{body}"
-
 
     def visitForControl(self, ctx):
         if ctx.enhancedForControl():
             return self.visit(ctx.enhancedForControl())
         elif ctx.traditionalForControl():
             return self.visit(ctx.traditionalForControl())
-
 
     def visitTraditionalForControl(self, ctx):
         init = self.visit(ctx.forInit())
@@ -296,11 +272,10 @@ class JtoPConverter(java_grammarVisitor):
     def visitForInit(self, ctx):
         return self.visit(ctx.assignmentStatement() or ctx.extendedIDwithThis())
 
-
     def visitForUpdate(self, ctx):
         return ", ".join(
-            self.visit(expr) for expr in ctx.arithmeticExpression() + ctx.incrementStatement() + ctx.decrementStatement())
-
+            self.visit(expr) for expr in
+            ctx.arithmeticExpression() + ctx.incrementStatement() + ctx.decrementStatement())
 
     def visitEnhancedForControl(self, ctx):
         type_name = ctx.type().getText()
@@ -308,18 +283,15 @@ class JtoPConverter(java_grammarVisitor):
         iterable = self.visit(ctx.extendedIDwithThis())
         return f"{type_name} {id_name} in {iterable}"
 
-
     def visitSwitchStatement(self, ctx):
         switch_expression = self.visit(ctx.extendedIDwithThis())
         cases = "\n".join(self.visit(case) for case in ctx.switchBlock().switchBlockStatementGroup())
         return f"match {switch_expression}:\n{cases}"
 
-
     def visitSwitchBlockStatementGroup(self, ctx):
         labels = "\n".join(self.visit(label) for label in ctx.switchLabel())
         statements = "\n".join(self.visit(stmt) for stmt in ctx.block())
         return f"{labels}\n{statements}"
-
 
     def visitSwitchLabel(self, ctx):
         if ctx.CASE():
@@ -327,59 +299,49 @@ class JtoPConverter(java_grammarVisitor):
         elif ctx.DEFAULT():
             return "default:"
 
-
     def visitTryStatement(self, ctx):
         try_block = self.visit(ctx.block())
         catches = "\n".join(self.visit(catch) for catch in ctx.catchClause())
         finally_block = f"\nfinally:\n{self.visit(ctx.finallyBlock())}" if ctx.finallyBlock() else ""
         return f"try:\n{try_block}{catches}{finally_block}"
 
-
     def visitCatchClause(self, ctx):
         param = self.visit(ctx.catchFormalParameter())
         block = self.visit(ctx.block())
         return f"except {param}:\n{block}"
-
 
     def visitCatchFormalParameter(self, ctx):
         type_name = ctx.type().getText()
         id_name = ctx.ID().getText()
         return f"{type_name} {id_name}"
 
-
     def visitFinallyBlock(self, ctx):
         return self.visit(ctx.block())
-
 
     def visitReturnStatement(self, ctx):
         expr = self.visit(ctx.expression()) if ctx.expression() else ""
         return f"return {expr};"
 
-
     def visitBreakStatement(self, ctx):
         return "break;"
 
-
     def visitContinueStatement(self, ctx):
         return "continue;"
-
 
     def visitThrowStatement(self, ctx):
         throw_expr = self.visit(ctx.ID() or ctx.newInstance())
         return f"throw {throw_expr};"
 
-
     def visitExpression(self, ctx):
         return self.visit(ctx.logicalExpression() or
-                        ctx.arithmeticExpression() or
-                        ctx.assignmentStatement() or
-                        ctx.incrementStatement() or
-                        ctx.decrementStatement() or
-                        ctx.functionCall() or
-                        ctx.printStatement() or
-                        ctx.inputStatement()
-                        )
-
+                          ctx.arithmeticExpression() or
+                          ctx.assignmentStatement() or
+                          ctx.incrementStatement() or
+                          ctx.decrementStatement() or
+                          ctx.functionCall() or
+                          ctx.printStatement() or
+                          ctx.inputStatement()
+                          )
 
     def visitLogicalExpression(self, ctx):
         if ctx.logicalOperator():
@@ -389,7 +351,6 @@ class JtoPConverter(java_grammarVisitor):
             return f"{left} {operator} {right}"
         else:
             return self.visit(ctx.logicalTerm(0))
-
 
     def visitLogicalTerm(self, ctx):
         if ctx.logicalExpression():
@@ -405,10 +366,8 @@ class JtoPConverter(java_grammarVisitor):
         elif ctx.getChildCount() == 1:
             return self.visit(ctx.getChild(0))
 
-
     def visitUnaryLogicalExpression(self, ctx):
         return f"{ctx.LOGICAL_NOT().getText()} {self.visit(ctx.logicalTerm())}"
-
 
     def visitArithmeticExpression(self, ctx):
         if ctx.arithmeticOperator():
@@ -418,7 +377,6 @@ class JtoPConverter(java_grammarVisitor):
             return f"{left} {operator} {right}"
         else:
             return self.visit(ctx.arithmeticTerm(0))
-
 
     def visitArithmeticTerm(self, ctx):
         if ctx.arithmeticExpression():
@@ -432,11 +390,9 @@ class JtoPConverter(java_grammarVisitor):
         elif ctx.getChildCount() == 1:
             return self.visit(ctx.getChild(0))
 
-
     def visitUnaryArithmeticExpression(self, ctx):
         operator = ctx.ADD().getText() if ctx.ADD() else ctx.SUB().getText()
         return f"{operator}{self.visit(ctx.arithmeticTerm())}"
-
 
     def visitAssignmentStatement(self, ctx):
         type_name = ctx.type().getText() if ctx.type() else ""
@@ -445,7 +401,6 @@ class JtoPConverter(java_grammarVisitor):
         value = self.visit(
             ctx.expression() or ctx.newInstance() or ctx.extendedIDwithThis() or ctx.literal() or ctx.functionCall())
         return f"{type_name} {target} {operator} {value}"
-
 
     def visitLiteral(self, ctx):
         if ctx.INTEGER_NUMBER():
@@ -461,43 +416,33 @@ class JtoPConverter(java_grammarVisitor):
         elif ctx.NULL():
             return "None"
 
-
     def visitExtendedID(self, ctx):
         return ".".join(ctx.ID())
-
 
     def visitExtendedIDwithThis(self, ctx):
         return ".".join(ctx.ID())
 
-
     def visitDataType(self, ctx):
         return ctx.getText()
 
-
     def visitType(self, ctx):
         return ctx.getText()
-
 
     def visitFunctionCall(self, ctx):
         function_name = self.visit(ctx.extendedIDwithThis())
         arguments = ", ".join(self.visit(expr) for expr in ctx.expression())
         return f"{function_name}({arguments})"
 
-
     def visitPrintStatement(self, ctx):
         print_type = "print" if ctx.PRINT() else "println"
         expr = self.visit(ctx.expression())
         return f"{print_type}({expr})"
-
 
     def visitInputStatement(self, ctx):
         type_name = ctx.type().getText()
         id_name = ctx.ID().getText()
         expression = self.visit(ctx.expression())
         return f"{type_name} {id_name} = {ctx.SCANNER().getText()}({expression}).{ctx.NEXT().getText()}();"
-
-
-
 
 
 def convert(input_text):

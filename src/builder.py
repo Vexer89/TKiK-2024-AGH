@@ -1,5 +1,15 @@
 import file
 
+
+def convert_visibility(visibility):
+    if visibility == "public":
+        return ""
+    elif visibility == "protected":
+        return "_"
+    elif visibility == "private":
+        return "__"
+
+
 class PythonFileBuilder:
 
     def __init__(self, file_obj: file.File):
@@ -17,23 +27,64 @@ class PythonFileBuilder:
 
         for struct in self.file_obj.structs:
             if type(struct) == file.Enum:
-
-                result += f"class {struct.name}(Enum):\n"
-                elements = ""
-                i = 1
-                for el in struct.options:
-                    elements += f"\t {el} = {i} \n"
-                    i += 1
-                result += elements
+                result += self.build_enum(struct)
 
             elif type(struct) == file.Struct:
-
-                if struct.is_abstract or struct.is_interface:
-                    struct.parents.append("ABC")
-                result += f"class {struct.name}({', '.join(struct.parents)}):"
-
-                
-                for member in struct.members:
-                    if
+                result += self.build_struct(struct)
 
         return result
+
+    def build_enum(self, struct):
+        result = ""
+        result += f"class {struct.name}(Enum):\n"
+        elements = ""
+        i = 1
+        for el in struct.options:
+            elements += f"\t {el} = {i} \n"
+            i += 1
+        result += elements
+        return result
+
+    def build_struct(self, struct):
+
+        result = ""
+
+        if struct.is_abstract or struct.is_interface:
+            struct.parents.append("ABC")
+
+        print(struct.parents)
+        result += f"class {struct.name}({', '.join(struct.parents) if len(struct.parents) > 0 else ''}):\n"
+
+        struct.check_for_non_static()
+
+        print(struct.members)
+        #print(struct.non_static[0].name)
+        #print(struct.non_static[0].visibility)
+
+        for member in struct.members:
+            if type(member) == file.Enum:
+                result += self.build_enum(member)
+            elif type(member) == file.Struct:
+                result += self.build_struct(member)
+            elif type(member) == file.Field:
+                result += self.build_static_field(member)
+            elif type(member) == file.Method:
+                result += self.build_method(member)
+
+        print(result)
+        return result
+
+    def build_static_field(self, field):
+        result = ""
+        converted_visibility = convert_visibility(field.visibility)
+        result += f"{converted_visibility}{field.name} = {field.value}"
+        return result
+
+    def build_method(self, method):
+        result = ""
+        converted_visibility = convert_visibility(method.visibility)
+        return result
+
+
+
+

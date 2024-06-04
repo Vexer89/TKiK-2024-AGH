@@ -13,10 +13,15 @@ class Struct:
         self.is_interface = is_interface
         self.parents = []
         self.members = []
-        #self.instance_fields = []
-        #self.static_fields = []
-        #self.methods = []
-        #self.structs = []
+        self.non_static = []
+
+    def check_for_non_static(self):
+        for member in self.members:
+            if type(member) == Field and not member.is_static:
+                self.non_static.append(member)
+                self.members.remove(member)
+
+
 
 class Enum:
     def __init__(self, name, indent):
@@ -33,6 +38,7 @@ class Field:
         self.visibility = visibility
         self.value = value
         self.is_static = is_static
+
 
 
 
