@@ -165,7 +165,8 @@ assignmentOperator : ASSIGN
 //Dane
 literal : INTEGER_NUMBER 
         | FLOAT_NUMBER 
-        | STRING 
+        | STRING_TEXT
+        | CHARACTER
         | TRUE 
         | FALSE 
         | NULL 
@@ -215,11 +216,11 @@ dataStructers : ARRAYLIST
 
 //Obsługa lini komend
 printStatement
-    : (PRINT | PRINTLN) LPAREN expression RPAREN SEMICOLON
+    : (PRINT | PRINTLN) LPAREN (expression | literal) RPAREN SEMICOLON
     ;
 
 inputStatement
-    : type ID ASSIGN NEW SCANNER LPAREN expression RPAREN DOT NEXT LPAREN RPAREN SEMICOLON
+    : type ID ASSIGN NEW SCANNER LPAREN (expression | literal) RPAREN DOT NEXT LPAREN RPAREN SEMICOLON
     ;
 
 //Identyfikatory
