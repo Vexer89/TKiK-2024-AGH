@@ -50,7 +50,7 @@ formalParameter : type ID ;
 methodBody : block ;
 block : LBRACE blockStatement* RBRACE ;
 
-blockStatement : statement SEMICOLON ;
+blockStatement : statement ;
 variableDeclarators : type ID (ASSIGN literal)? ;
 
 // Reguły dla instrukcji
