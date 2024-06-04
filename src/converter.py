@@ -92,9 +92,13 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitEnumDeclaration(self, ctx):
         enum_name = ctx.ID().getText()
-        enum_constants = ", ".join(ctx.enumBody().ID())
-        members = "\n".join(self.visit(member) for member in ctx.enumBody().classMemberDeclaration())
-        return f"enum {enum_name}({enum_constants}):\n{members}"
+        new_enum = file.Enum(enum_name)
+
+        for name in ctx.enumBody().ID():
+            new_enum.options.append(name)
+
+        self.file.structs.append(new_enum)
+
 
 
     def visitSuperClass(self, ctx):

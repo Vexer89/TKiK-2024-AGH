@@ -26,7 +26,7 @@ classMemberDeclaration : fieldDeclaration
 
 //Enum
 enumDeclaration : DEFAULT? ENUM ID enumBody ;
-enumBody : LBRACE ID (COMMA ID)* SEMICOLON (classMemberDeclaration)* RBRACE;
+enumBody : LBRACE ID (COMMA ID)* SEMICOLON RBRACE;
 
 //Interfejs
 interfaceDeclaration : DEFAULT? INTERFACE ID interfaceBody;
