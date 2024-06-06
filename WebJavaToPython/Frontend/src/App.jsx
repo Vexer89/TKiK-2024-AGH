@@ -1,5 +1,5 @@
 
-import Translator from './Translator';
+import Translator from './Converter';
 
 function App() {
   return (

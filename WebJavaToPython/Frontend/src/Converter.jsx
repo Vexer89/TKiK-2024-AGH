@@ -9,7 +9,7 @@ function Translator() {
 
   const [javaCode, setJavaCode] = useState("");
   const [pythonCode, setPythonCode] = useState("");
-  const [file, setFile] = useState("");
+  const [fileName, setFileName] = useState("ConvertedCode");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -48,10 +48,11 @@ function Translator() {
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      setFileName(file.name.split(".")[0]);
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target.result;
-        setJavaCode(text); // setState and rely on useEffect to trigger translation
+        setJavaCode(text); 
       };
       reader.readAsText(file);
     }
@@ -59,7 +60,7 @@ function Translator() {
 
   // Dummy translation function (replace with actual API call)
 
-  const downloadFile = (data, filename, type = "text/plain") => {
+  const downloadFile = (data, filename, type="text/plain") => {
     const file = new Blob([data], { type: type });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(file);
@@ -68,8 +69,9 @@ function Translator() {
   };
 
   const handleDownloadPython = () => {
-    downloadFile(pythonCode, `${file}.py`, "text/plain");
+    downloadFile(pythonCode, `${fileName}.py`, "text/plain");
   };
+
 
   return (
     <div>
