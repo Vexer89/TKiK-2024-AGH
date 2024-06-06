@@ -79,7 +79,7 @@ statement : ifStatement
           ;
 ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE (ELSE statement+)?;
 whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE ;
-doWhileStatement : DO LBRACE statement+ RBRACE WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN);
+doWhileStatement : DO LBRACE statement+ RBRACE WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) SEMICOLON;
 forStatement : FOR LPAREN forControl RPAREN LBRACE statement+ RBRACE ;
 forControl : enhancedForControl 
            | traditionalForControl 

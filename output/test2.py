@@ -1,4 +1,4 @@
-from enum import Enum,Enum 
+from enum import Enum 
 class SwitchCaseExample(ABFVY):
 	class nazwa(BCF):
 		class typ2(Enum):

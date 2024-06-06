@@ -13,12 +13,11 @@ class JtoPConverter(java_grammarVisitor):
 
     def add_to_imports(self, lib, cont):
 
-        print(lib)
-
         if lib not in self.file.imports:
             self.file.imports[lib] = []
 
-        self.file.imports[lib].append(cont)
+        if cont not in self.file.imports[lib]:
+            self.file.imports[lib].append(cont)
 
 
     def increase_indentation(self):
