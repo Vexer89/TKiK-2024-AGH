@@ -11,6 +11,16 @@ class JtoPConverter(java_grammarVisitor):
         self.file = file.File()
         self.indentation_level = 0
 
+    def add_to_imports(self, lib, cont):
+
+        print(lib)
+
+        if lib not in self.file.imports:
+            self.file.imports[lib] = []
+
+        self.file.imports[lib].append(cont)
+
+
     def increase_indentation(self):
         self.indentation_level += 1
 
@@ -19,13 +29,12 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitProgram(self, ctx):
         for element in ctx.importDeclaration() + ctx.packageDeclaration() + ctx.structerDeclaration():
-            self.visit(element)
+            self.file.structs.append(self.visit(element))
         return self.file
 
     def visitImportDeclaration(self, ctx):
         import_name = ctx.extendedID().getText()
         self.file.imports[import_name] = None
-        print(self.file.imports)
 
     def visitPackageDeclaration(self, ctx):
         pass
@@ -47,6 +56,7 @@ class JtoPConverter(java_grammarVisitor):
 
         if "abstract" in modifiers:
             is_abstract = True
+            self.add_to_imports('abc', 'ABC')
         else:
             is_abstract = False
 
@@ -57,21 +67,17 @@ class JtoPConverter(java_grammarVisitor):
         else:
             super_classes = []
 
-        print(super_classes)
-
         if ctx.interfaces():
             interfaces = self.visit(ctx.interfaces())
         else:
             interfaces = []
-
-        print(interfaces)
 
         new_class.parents = super_classes + interfaces
 
         for member in self.visit(ctx.classBody()):
             new_class.members.append(member)
 
-        self.file.structs.append(new_class)
+        return new_class
 
     def visitClassModifiers(self, ctx):
         arr = []
@@ -97,22 +103,25 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitInterfaceDeclaration(self, ctx):
         interface_name = ctx.ID().getText()
-        self.file.imports["abc"] = "ABC, abstractmethod"
+        self.add_to_imports('abc,' 'ABC')
         new_interface = file.Struct(interface_name, False, True, self.indentation_level)
 
         for member in self.visit(ctx.interfaceBody()):
             new_interface.members.append(member)
 
-        self.file.structs.append(new_interface)
+        return new_interface
 
     def visitEnumDeclaration(self, ctx):
+
+        self.add_to_imports('enum', 'Enum')
+
         enum_name = ctx.ID().getText()
         new_enum = file.Enum(enum_name, self.indentation_level)
 
         for name in ctx.enumBody().ID():
             new_enum.options.append(name)
 
-        self.file.structs.append(new_enum)
+        return new_enum
 
     def visitSuperClass(self, ctx):
         names = []
@@ -144,6 +153,14 @@ class JtoPConverter(java_grammarVisitor):
             return self.visit(ctx.classDeclaration())
         elif ctx.interfaceDeclaration():
             return self.visit(ctx.interfaceDeclaration())
+        elif ctx.enumDeclaration():
+            return self.visit(ctx.enumDeclaration())
+        elif ctx.constructor():
+            return self.visit(ctx.constructor())
+
+    #todo zaimplementować konstruktor
+    def visitConstructor(self, ctx):
+        pass
 
     def visitFieldDeclaration(self, ctx):
         new_field = self.visit(ctx.variableDeclarators())
@@ -151,7 +168,7 @@ class JtoPConverter(java_grammarVisitor):
         if ctx.modifiers():
             for element in self.visit(ctx.modifiers()):
                 modifiers.append(element.getText())
-        print(modifiers)
+
         if "public" in modifiers:
             new_field.visibility = 'public'
         elif "private" in modifiers:
@@ -185,6 +202,7 @@ class JtoPConverter(java_grammarVisitor):
 
         if ctx.ABSTRACT():
             is_abstract = True
+            self.add_to_imports('abc,' 'abstractmethod')
         else:
             is_abstract = False
 
@@ -207,7 +225,7 @@ class JtoPConverter(java_grammarVisitor):
         else:
             is_static = False
 
-        body = ""
+        body = self.visit(ctx.methodBody())
 
         new_method = file.Method(method_name, visibility, is_abstract, is_static, params, body, self.indentation_level)
 
@@ -219,7 +237,7 @@ class JtoPConverter(java_grammarVisitor):
     def visitFormalParameters(self, ctx):
         params = []
         for param in ctx.formalParameter():
-            params.append(param)
+            params.append(param.getText())
         return params
 
     def visitFormalParameter(self, ctx):
@@ -420,10 +438,18 @@ class JtoPConverter(java_grammarVisitor):
             return "None"
 
     def visitExtendedID(self, ctx):
-        return ".".join(ctx.ID())
+        return ctx.getText()
 
     def visitExtendedIDwithThis(self, ctx):
-        return ".".join(ctx.ID())
+        if ctx.extendedID():
+            if ctx.THIS():
+                result = f"self.{ctx.extendedID()}"
+            else:
+                result = ctx.extendedID()
+        else:
+            result = "self"
+
+        return result
 
     def visitDataType(self, ctx):
         return ctx.getText()

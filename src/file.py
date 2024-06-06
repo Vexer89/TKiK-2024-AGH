@@ -52,6 +52,9 @@ class Method:
         self.params = params
         self.body = body
 
+#class Constructor:
+
+    #def __init__(self, body):
         
         
         

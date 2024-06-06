@@ -22,11 +22,15 @@ classMemberDeclaration : fieldDeclaration
                        | methodDeclaration 
                        | classDeclaration 
                        | interfaceDeclaration
+                       | enumDeclaration
+                       | constructor
                        ;
+
+constructor : (PUBLIC | PROTECTED | PRIVATE) ID LPAREN formalParameters? RPAREN methodBody;
 
 //Enum
 enumDeclaration : DEFAULT? ENUM ID enumBody ;
-enumBody : LBRACE ID (COMMA ID)* SEMICOLON RBRACE;
+enumBody : LBRACE ID (COMMA ID)* RBRACE;
 
 //Interfejs
 interfaceDeclaration : DEFAULT? INTERFACE ID interfaceBody;
@@ -202,6 +206,8 @@ modifier : PUBLIC
 classModifiers : classModifier+ ;
 classModifier : ABSTRACT
               | DEFAULT
+              | PROTECTED
+              | PRIVATE
               ;
 
 //Struktury danych

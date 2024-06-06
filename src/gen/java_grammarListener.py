@@ -89,6 +89,15 @@ class java_grammarListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by java_grammarParser#constructor.
+    def enterConstructor(self, ctx:java_grammarParser.ConstructorContext):
+        pass
+
+    # Exit a parse tree produced by java_grammarParser#constructor.
+    def exitConstructor(self, ctx:java_grammarParser.ConstructorContext):
+        pass
+
+
     # Enter a parse tree produced by java_grammarParser#enumDeclaration.
     def enterEnumDeclaration(self, ctx:java_grammarParser.EnumDeclarationContext):
         pass
