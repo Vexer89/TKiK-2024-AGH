@@ -1,18 +1,11 @@
-public class SwitchCaseExample {
-    public void checkDay(int dayOfWeek) {
-        switch (dayOfWeek) {
-            case 1:
-                System.out.println("Monday");
-                break;
-            case 2:
-                System.out.println("Tuesday");
-                break;
-            case 3:
-                System.out.println("Wednesday");
-                break;
-            default:
-                System.out.println("Other day");
-                break;
+public class SwitchCaseExample extends ABFVY {
+    private class nazwa implements BCF{
+        enum typ2{YVWUX,
+        BJXBJ
         }
     }
+    protected static int zmienna = 99;
 }
+enum typ{YVWUX,
+        BJXBJ
+        }

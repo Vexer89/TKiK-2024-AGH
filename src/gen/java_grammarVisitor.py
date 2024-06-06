@@ -54,6 +54,11 @@ class java_grammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by java_grammarParser#constructor.
+    def visitConstructor(self, ctx:java_grammarParser.ConstructorContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by java_grammarParser#enumDeclaration.
     def visitEnumDeclaration(self, ctx:java_grammarParser.EnumDeclarationContext):
         return self.visitChildren(ctx)

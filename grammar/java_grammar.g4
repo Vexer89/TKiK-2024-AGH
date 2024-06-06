@@ -22,11 +22,15 @@ classMemberDeclaration : fieldDeclaration
                        | methodDeclaration 
                        | classDeclaration 
                        | interfaceDeclaration
+                       | enumDeclaration
+                       | constructor
                        ;
+
+constructor : (PUBLIC | PROTECTED | PRIVATE) ID LPAREN formalParameters? RPAREN methodBody;
 
 //Enum
 enumDeclaration : DEFAULT? ENUM ID enumBody ;
-enumBody : LBRACE ID (COMMA ID)* SEMICOLON RBRACE;
+enumBody : LBRACE ID (COMMA ID)* RBRACE;
 
 //Interfejs
 interfaceDeclaration : DEFAULT? INTERFACE ID interfaceBody;
@@ -75,7 +79,7 @@ statement : ifStatement
           ;
 ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE (ELSE statement+)?;
 whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE ;
-doWhileStatement : DO LBRACE statement+ RBRACE WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN);
+doWhileStatement : DO LBRACE statement+ RBRACE WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) SEMICOLON;
 forStatement : FOR LPAREN forControl RPAREN LBRACE statement+ RBRACE ;
 forControl : enhancedForControl 
            | traditionalForControl 
@@ -202,6 +206,8 @@ modifier : PUBLIC
 classModifiers : classModifier+ ;
 classModifier : ABSTRACT
               | DEFAULT
+              | PROTECTED
+              | PRIVATE
               ;
 
 //Struktury danych
