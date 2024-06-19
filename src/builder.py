@@ -107,7 +107,6 @@ class PythonFileBuilder:
             result += "@abstractmethod \n"
 
         result += f"def {converted_visibility}{method.name}(self, {','.join(method.params) if len(method.params) > 0 else ''}):\n"
-        print(method.body)
         for el in method.body:
             if type(el) == file.ForLoop:
                 result += self.build_for_loop(el)
@@ -117,7 +116,7 @@ class PythonFileBuilder:
                 result += self.build_if_condition(el)
             elif type(el) == file.Switch:
                 result += self.build_switch(el)
-            elif type(el) == file.Line:
+            elif type(el) == str:
                 result += self.build_line(el)
 
         return result
@@ -155,15 +154,13 @@ class PythonFileBuilder:
                 result += self.build_if_condition(el)
             elif type(el) == file.Switch:
                 result += self.build_switch(el)
-            elif type(el) == file.Line:
+            elif type(el) == str:
                 result += self.build_line(el)
         return result
 
     def build_while_loop(self, while_loop):
         result = ""
         result += while_loop.indent * '\t'
-        print(while_loop.cond)
-        print(while_loop.cond.indent)
         result += f"while {while_loop.cond}:\n"
         for el in while_loop.body:
             if type(el) == file.ForLoop:
@@ -174,7 +171,7 @@ class PythonFileBuilder:
                 result += self.build_if_condition(el)
             elif type(el) == file.Switch:
                 result += self.build_switch(el)
-            elif type(el) == file.Line:
+            elif type(el) == str:
                 result += self.build_line(el)
         return result
 
@@ -192,15 +189,12 @@ class PythonFileBuilder:
                     result += self.build_if_condition(el)
                 elif type(el) == file.Switch:
                     result += self.build_switch(el)
-                elif type(el) == file.Line:
+                elif type(el) == str:
                     result += self.build_line(el)
         return result
 
     def build_line(self, line):
-        result = ""
-        result += line.indent * '\t'
-        result += f"{line.line}\n"
-        return result
+        return line + '\n'
 
     #todo
     def build_switch(self, switch):

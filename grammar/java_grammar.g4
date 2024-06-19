@@ -182,14 +182,18 @@ literal : INTEGER_NUMBER
         ;
 
 //Tworzenie nowych obiektów
-newInstance : NEW (ID | dataStructerDeclaration) LPAREN formalParameters RPAREN;
+newInstance : NEW (ID | dataStructerDeclaration) LPAREN parameters? RPAREN;
 
 //Inkrementacja, dekrementacja
 incrementStatement: extendedIDwithThis INCREMENT;
 decrementStatement: extendedIDwithThis DECREMENT;
 
 //Wywołanie metody
-functionCall: extendedIDwithThis LPAREN extendedIDwithThis? (COMMA extendedIDwithThis)* RPAREN;
+functionCall: extendedIDwithThis LPAREN parameters? RPAREN;
+
+parameters : (parameter) (COMMA (parameter))* ;
+parameter : extendedIDwithThis | literal;
+
 
 //Reguły dla typów danych
 type : dataType 

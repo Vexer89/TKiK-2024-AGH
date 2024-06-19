@@ -27,6 +27,9 @@ class JtoPConverter(java_grammarVisitor):
     def decrease_indentation(self):
         self.indentation_level -= 1
 
+    def getIndentation(self):
+        return self.indentation_level * '\t'
+
     def visitProgram(self, ctx):
         for element in ctx.importDeclaration() + ctx.packageDeclaration() + ctx.structerDeclaration():
             self.file.structs.append(self.visit(element))
@@ -253,21 +256,18 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitBlock(self, ctx):
         self.increase_indentation()
-        print("ok")
         result = []
-        print(ctx.statement())
         for statement in ctx.statement():
             obj = self.visit(statement)
-            print(obj)
+            if type(obj) == str:
+                obj = self.getIndentation() + obj
             result.append(obj)
 
         self.decrease_indentation()
-        print(result)
         return result
 
 
     def visitStatement(self, ctx):
-        print("ok2")
         if ctx.fullIfStatement():
             return self.visit(ctx.fullIfStatement())
         elif ctx.whileStatement():
@@ -316,11 +316,14 @@ class JtoPConverter(java_grammarVisitor):
     def visitIfStatement(self, ctx):
         condition = self.visit(ctx.logicalExpression())
 
-        self.indentation_level += 1
+        self.increase_indentation()
         body = []
         for stmt in ctx.statement():
-            body.append(self.visit(stmt))
-        self.indentation_level -= 1
+            obj = self.visit(stmt)
+            if type(obj) == str:
+                obj = self.getIndentation() + obj
+            body.append(obj)
+        self.decrease_indentation()
 
         new_if = file.IfPart("if", condition, body, self.indentation_level)
 
@@ -329,20 +332,31 @@ class JtoPConverter(java_grammarVisitor):
     def visitElseIfStatement(self, ctx):
         condition = self.visit(ctx.logicalExpression())
 
-        self.indentation_level += 1
+        self.increase_indentation()
         body = []
         for stmt in ctx.statement():
-            body.append(self.visit(stmt))
-        self.indentation_level -= 1
+            obj = self.visit(stmt)
+            if type(obj) == str:
+                obj = self.getIndentation() + obj
+            body.append(obj)
+
+        self.decrease_indentation()
 
         new_if = file.IfPart("elif", condition, body, self.indentation_level)
 
         return new_if
 
     def visitElseStatement(self, ctx):
+
+        self.increase_indentation()
         body = []
         for stmt in ctx.statement():
-            body.append(self.visit(stmt))
+            obj = self.visit(stmt)
+            if type(obj) == str:
+                obj = self.getIndentation() + obj
+            body.append(obj)
+
+        self.decrease_indentation()
 
         new_if = file.IfPart("else", "", body, self.indentation_level)
 
@@ -350,18 +364,30 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitWhileStatement(self, ctx):
         condition = self.visit(ctx.logicalExpression())
+
+        self.increase_indentation()
         body = []
         for stmt in ctx.statement():
-            body.append(self.visit(stmt))
+            obj = self.visit(stmt)
+            if type(obj) == str:
+                obj = self.getIndentation() + obj
+            body.append(obj)
+        self.decrease_indentation()
 
         new_while = file.WhileLoop(condition, body, self.indentation_level)
 
         return new_while
 
     def visitDoWhileStatement(self, ctx):
+
+        self.increase_indentation()
         body = []
         for stmt in ctx.statement():
-            body.append(self.visit(stmt))
+            obj = self.visit(stmt)
+            if type(obj) == str:
+                obj = self.getIndentation() + obj
+            body.append(obj)
+        self.decrease_indentation()
 
         condition = self.visit(ctx.logicalExpression())
         body.append(file.Line(f"if {condition}:", self.indentation_level))
@@ -374,9 +400,14 @@ class JtoPConverter(java_grammarVisitor):
     def visitForStatement(self, ctx):
         control = self.visit(ctx.forControl())
 
+        self.increase_indentation()
         body = []
         for stmt in ctx.statement():
-            body.append(self.visit(stmt))
+            obj = self.visit(stmt)
+            if type(obj) == str:
+                obj = self.getIndentation() + obj
+            body.append(obj)
+        self.decrease_indentation()
 
         new_for = file.ForLoop(control, body, self.indentation_level)
 
@@ -430,9 +461,14 @@ class JtoPConverter(java_grammarVisitor):
         for value in ctx.switchLabel():
             values.append(self.visit(value))
 
+        self.increase_indentation()
         statements = []
         for stmt in ctx.statement():
-            statements.append(self.visit(stmt))
+            obj = self.visit(stmt)
+            if type(obj) == str:
+                obj = self.getIndentation() + obj
+            statements.append(obj)
+        self.decrease_indentation()
 
         new_case = file.Case(values, statements, self.indentation_level)
         return new_case
@@ -464,31 +500,20 @@ class JtoPConverter(java_grammarVisitor):
     #todo koniec obsługi błędów
 
     def visitReturnStatement(self, ctx):
-        print("OK")
         if ctx.literal():
             ret_val = self.visit(ctx.literal())
         elif ctx.extendedIDwithThis():
             ret_val = self.visit(ctx.extendedIDwithThis())
         elif ctx.expression():
-            print("expression")
             ret_val = self.visit(ctx.expression())
 
-        if(type(ret_val) == file.Line):
-            line = f"return {ret_val.line}"
-        else:
-            line = f"return {ret_val}"
-
-        new_line = file.Line(line, self.indentation_level)
-        print(new_line)
-        return new_line
+        return f"return {ret_val}"
 
     def visitBreakStatement(self, ctx):
-        new_line = file.Line(f"break", self.indentation_level)
-        return new_line
+        return f"break"
 
     def visitContinueStatement(self, ctx):
-        new_line = file.Line(f"continue", self.indentation_level)
-        return new_line
+        return f"continue"
 
     #todo obsługa błędów
     def visitThrowStatement(self, ctx):
@@ -497,12 +522,9 @@ class JtoPConverter(java_grammarVisitor):
     #todo koniec obsługi błędów
 
     def visitExpression(self, ctx):
-        print("ok3")
         if ctx.arithmeticExpression():
-            print("arithmetic")
             return self.visit(ctx.arithmeticExpression())
         elif ctx.logicalExpression():
-            print("logical")
             return self.visit(ctx.logicalExpression())
 
     def visitLogicalExpression(self, ctx):
@@ -510,56 +532,69 @@ class JtoPConverter(java_grammarVisitor):
             left = self.visit(ctx.logicalExpression())
             operator = self.visit(ctx.logicalOperator())
             right = self.visit(ctx.logicalTerm())
-            new_line = file.Line(f"{left} {operator} {right}", self.indentation_level)
-            return new_line
+            return f"{left} {operator} {right}"
         else:
-            print("else")
-            new_line = file.Line(f"{self.visit(ctx.logicalTerm())}", self.indentation_level)
-            return new_line
+            return f"{self.visit(ctx.logicalTerm())}"
 
     def visitLogicalOperator(self, ctx):
         if ctx.LOGICAL_AND():
             return "and"
         elif ctx.LOGICAL_OR():
             return "or"
-        else:
-            ctx.getText()
+        elif ctx.EQUAL():
+            return "=="
+        elif ctx.NOT_EQUAL():
+            return "!="
+        elif ctx.GREATER_THAN():
+            return ">"
+        elif ctx.LESS_THAN():
+            return "<"
+        elif ctx.LESS_THAN_OR_EQUAL():
+            return "<="
+        elif ctx.GREATER_THAN_OR_EQUAL():
+            return ">="
 
 
     def visitLogicalTerm(self, ctx):
         if ctx.extendedIDwithThis():
-            print("extended")
             return self.visit(ctx.extendedIDwithThis())
         elif ctx.literal():
-            print("literal")
             return self.visit(ctx.literal())
         elif ctx.unaryLogicalExpression():
             return self.visit(ctx.unaryLogicalExpression())
         elif ctx.logicalExpression():
-            print("logical")
             return f"({self.visit(ctx.logicalExpression())})"
         elif ctx.LPAREN() and ctx.RPAREN():
-            print("paren")
             return f"({self.visit(ctx.arithmeticExpression())})"
         elif ctx.arithmeticExpression():
-            print("arithmetic")
             return self.visit(ctx.arithmeticExpression())
 
     def visitUnaryLogicalExpression(self, ctx):
         return f"not {self.visit(ctx.logicalTerm())}"
 
     def visitArithmeticExpression(self, ctx):
+        print("ArithmeticExpression")
         if ctx.arithmeticOperator():
             left = self.visit(ctx.arithmeticExpression())
-            operator = ctx.arithmeticOperator().getText()
+            operator = self.visit(ctx.arithmeticOperator())
             right = self.visit(ctx.arithmeticTerm())
-            new_line = file.Line(f"{left} {operator} {right}", self.indentation_level)
-            return new_line
+            return f"{left} {operator} {right}"
         else:
-            new_line = file.Line(self.visit(ctx.arithmeticTerm()), self.indentation_level)
-            return new_line
+            return f"{self.visit(ctx.arithmeticTerm())}"
 
+    def visitArithmeticOperator(self, ctx):
+        if ctx.ADD():
+            return "+"
+        elif ctx.SUB():
+            return "-"
+        elif ctx.MUL():
+            return "*"
+        elif ctx.DIV():
+            return "/"
+        elif ctx.MOD():
+            return "%"
     def visitArithmeticTerm(self, ctx):
+        print("ArithmeticTerm")
         if ctx.extendedIDwithThis():
             return self.visit(ctx.extendedIDwithThis())
         elif ctx.literal():
@@ -570,14 +605,14 @@ class JtoPConverter(java_grammarVisitor):
             return f"({self.visit(ctx.arithmeticExpression())})"
 
     def visitUnaryArithmeticExpression(self, ctx):
-        operator = "+= 1" if ctx.ADD() else "-= 1"
-        return f"{self.visit(ctx.arithmeticTerm())} {operator}"
+        print("UnaryArithmeticExpression")
+        operator = "+" if ctx.ADD() else "-"
+        return f"{operator} {self.visit(ctx.arithmeticTerm())}"
 
     def visitAssignmentStatement(self, ctx) -> string:
         target = self.visit(ctx.extendedIDwithThis())
         value = self.visit(ctx.assignedValue())
-        new_line = file.Line(f"{target} = {value}", self.indentation_level)
-        return new_line
+        return f"{target} = {value}"
 
     def visitAssignedValue(self, ctx):
         if ctx.extendedIDwithThis():
@@ -591,6 +626,13 @@ class JtoPConverter(java_grammarVisitor):
         elif ctx.expression():
             return self.visit(ctx.expression())
 
+    def visitNewInstance(self, ctx):
+        class_name = ctx.ID().getText()
+        if ctx.parameters():
+            params = self.visit(ctx.parameters())
+        else:
+            params = ""
+        return f"{class_name}({params})"
     def visitLiteral(self, ctx):
         if ctx.INTEGER_NUMBER():
             return ctx.INTEGER_NUMBER()
@@ -604,6 +646,14 @@ class JtoPConverter(java_grammarVisitor):
             return "False"
         elif ctx.NULL():
             return "None"
+
+    def visitDecrementStatement(self, ctx):
+        target = self.visit(ctx.extendedIDwithThis())
+        return f"{target} -= 1"
+
+    def visitIncrementStatement(self, ctx):
+        target = self.visit(ctx.extendedIDwithThis())
+        return f"{target} += 1"
 
     def visitExtendedID(self, ctx):
         return ctx.getText()
@@ -627,23 +677,30 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitFunctionCall(self, ctx):
         function_name = self.visit(ctx.extendedIDwithThis())
-        arguments = ", ".join(self.visit(expr) for expr in ctx.extendedIDwithThis())
-        new_line = file.Line(f"{function_name}({arguments})", self.indentation_level)
-        return new_line
+        if ctx.parameters():
+            arguments = self.visit(ctx.parameters())
+        else:
+            arguments = ""
+        return f"{function_name}({arguments})"
+
+    def visitPararameters(self, ctx):
+        return ", ".join(self.visit(param) for param in ctx.parameter())
+
+    def visitParameter(self, ctx):
+        if ctx.extendedIDwithThis():
+            return self.visit(ctx.extendedIDwithThis())
+        elif ctx.literal():
+            return self.visit(ctx.literal())
 
     def visitPrintStatement(self, ctx):
         if ctx.expression():
             out = self.visit(ctx.expression())
         elif ctx.literal():
             out = self.visit(ctx.literal())
-        new_line = file.Line(f"print({out})", self.indentation_level)
-        return new_line
+        return f"print({out})"
 
-    #todo tu w ogóle gramtyka jest zjebana
     def visitInputStatement(self, ctx):
-        id_name = ctx.ID().getText()
-        expression = self.visit(ctx.expression())
-        return f"{id_name} = {ctx.SCANNER().getText()}({expression}).{ctx.NEXT().getText()}();"
+        pass
 
 
 def convert(input_text):

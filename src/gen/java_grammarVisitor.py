@@ -339,6 +339,16 @@ class java_grammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by java_grammarParser#parameters.
+    def visitParameters(self, ctx:java_grammarParser.ParametersContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by java_grammarParser#parameter.
+    def visitParameter(self, ctx:java_grammarParser.ParameterContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by java_grammarParser#type.
     def visitType(self, ctx:java_grammarParser.TypeContext):
         return self.visitChildren(ctx)

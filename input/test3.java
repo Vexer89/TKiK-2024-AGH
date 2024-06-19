@@ -1,3 +1,9 @@
-public class nowa extends nowa1{
-    private static int nazwa = 0;
+public class nowa{
+    private void Test(){
+        abc = new Test2();
+        System.out.println("Hello World");
+        func(abc);
+        while (a < 10) {
+            c = a + b;
+        }
 }
