@@ -206,15 +206,6 @@ class java_grammarListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by java_grammarParser#blockStatement.
-    def enterBlockStatement(self, ctx:java_grammarParser.BlockStatementContext):
-        pass
-
-    # Exit a parse tree produced by java_grammarParser#blockStatement.
-    def exitBlockStatement(self, ctx:java_grammarParser.BlockStatementContext):
-        pass
-
-
     # Enter a parse tree produced by java_grammarParser#variableDeclarators.
     def enterVariableDeclarators(self, ctx:java_grammarParser.VariableDeclaratorsContext):
         pass
@@ -233,12 +224,39 @@ class java_grammarListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by java_grammarParser#fullIfStatement.
+    def enterFullIfStatement(self, ctx:java_grammarParser.FullIfStatementContext):
+        pass
+
+    # Exit a parse tree produced by java_grammarParser#fullIfStatement.
+    def exitFullIfStatement(self, ctx:java_grammarParser.FullIfStatementContext):
+        pass
+
+
     # Enter a parse tree produced by java_grammarParser#ifStatement.
     def enterIfStatement(self, ctx:java_grammarParser.IfStatementContext):
         pass
 
     # Exit a parse tree produced by java_grammarParser#ifStatement.
     def exitIfStatement(self, ctx:java_grammarParser.IfStatementContext):
+        pass
+
+
+    # Enter a parse tree produced by java_grammarParser#elseIfStatement.
+    def enterElseIfStatement(self, ctx:java_grammarParser.ElseIfStatementContext):
+        pass
+
+    # Exit a parse tree produced by java_grammarParser#elseIfStatement.
+    def exitElseIfStatement(self, ctx:java_grammarParser.ElseIfStatementContext):
+        pass
+
+
+    # Enter a parse tree produced by java_grammarParser#elseStatement.
+    def enterElseStatement(self, ctx:java_grammarParser.ElseStatementContext):
+        pass
+
+    # Exit a parse tree produced by java_grammarParser#elseStatement.
+    def exitElseStatement(self, ctx:java_grammarParser.ElseStatementContext):
         pass
 
 
@@ -293,6 +311,15 @@ class java_grammarListener(ParseTreeListener):
 
     # Exit a parse tree produced by java_grammarParser#forInit.
     def exitForInit(self, ctx:java_grammarParser.ForInitContext):
+        pass
+
+
+    # Enter a parse tree produced by java_grammarParser#forCondition.
+    def enterForCondition(self, ctx:java_grammarParser.ForConditionContext):
+        pass
+
+    # Exit a parse tree produced by java_grammarParser#forCondition.
+    def exitForCondition(self, ctx:java_grammarParser.ForConditionContext):
         pass
 
 
@@ -509,6 +536,15 @@ class java_grammarListener(ParseTreeListener):
 
     # Exit a parse tree produced by java_grammarParser#assignmentStatement.
     def exitAssignmentStatement(self, ctx:java_grammarParser.AssignmentStatementContext):
+        pass
+
+
+    # Enter a parse tree produced by java_grammarParser#assignedValue.
+    def enterAssignedValue(self, ctx:java_grammarParser.AssignedValueContext):
+        pass
+
+    # Exit a parse tree produced by java_grammarParser#assignedValue.
+    def exitAssignedValue(self, ctx:java_grammarParser.AssignedValueContext):
         pass
 
 

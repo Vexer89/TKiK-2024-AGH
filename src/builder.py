@@ -53,13 +53,19 @@ class PythonFileBuilder:
 
     def build_struct(self, struct):
 
+        constructor_exists = False
         result = ""
 
         if struct.is_abstract or struct.is_interface:
             struct.parents.append("ABC")
 
         result += struct.indent * '\t'
-        result += f"class {struct.name}({', '.join(struct.parents) if len(struct.parents) > 0 else ''}):\n"
+        if len(struct.parents) > 0:
+            inheritance = f"({', '.join(struct.parents)})"
+        else:
+            inheritance = ''
+
+        result += f"class {struct.name}{inheritance}:\n"
 
         struct.check_for_non_static()
 
@@ -72,6 +78,13 @@ class PythonFileBuilder:
                 result += self.build_static_field(member)
             elif type(member) == file.Method:
                 result += self.build_method(member)
+            elif type(member) == file.Constructor:
+                constructor_exists = True
+                result += self.build_constructor(struct.non_static, member)
+
+        if not constructor_exists and struct.non_static:
+            new_constructor = file.Constructor([], '', struct.indent + 1)
+            result += self.build_constructor(struct.non_static, new_constructor)
 
         return result
 
@@ -93,16 +106,102 @@ class PythonFileBuilder:
         if method.is_abstract:
             result += "@abstractmethod \n"
 
+        result += f"def {converted_visibility}{method.name}(self, {','.join(method.params) if len(method.params) > 0 else ''}):\n"
         print(method.body)
-        result += f"{converted_visibility}{method.name}({','.join(method.params) if len(method.params) > 0 else ''}):\n" \
-                  f"{method.body}"
+        for el in method.body:
+            if type(el) == file.ForLoop:
+                result += self.build_for_loop(el)
+            elif type(el) == file.WhileLoop:
+                result += self.build_while_loop(el)
+            elif type(el) == file.IfCondition:
+                result += self.build_if_condition(el)
+            elif type(el) == file.Switch:
+                result += self.build_switch(el)
+            elif type(el) == file.Line:
+                result += self.build_line(el)
 
         return result
 
     def build_constructor(self, non_static, constructor):
         result = ""
+        result += constructor.indent * '\t'
+
+        undeclared_non_static = []
+        for field in non_static:
+            if field.name not in constructor.params:
+                undeclared_non_static.append(field.name)
+        params_extended = constructor.params + undeclared_non_static
+
+        result += f"def __init__(self, {','.join(params_extended) if len(params_extended) > 0 else ''}):\n "
+
+        for name in undeclared_non_static:
+            result += (constructor.indent + 1) * '\t'
+            result += f"self.{name} = {name} \n"
+
+        result += constructor.body
 
         return result
 
+    def build_for_loop(self, for_loop):
+        result = ""
+        result += for_loop.indent * '\t'
+        result += f"for {for_loop.control.var} in {for_loop.control.range}:\n"
+        for el in for_loop.body:
+            if type(el) == file.ForLoop:
+                result += self.build_for_loop(el)
+            elif type(el) == file.WhileLoop:
+                result += self.build_while_loop(el)
+            elif type(el) == file.IfCondition:
+                result += self.build_if_condition(el)
+            elif type(el) == file.Switch:
+                result += self.build_switch(el)
+            elif type(el) == file.Line:
+                result += self.build_line(el)
+        return result
 
+    def build_while_loop(self, while_loop):
+        result = ""
+        result += while_loop.indent * '\t'
+        print(while_loop.cond)
+        print(while_loop.cond.indent)
+        result += f"while {while_loop.cond}:\n"
+        for el in while_loop.body:
+            if type(el) == file.ForLoop:
+                result += self.build_for_loop(el)
+            elif type(el) == file.WhileLoop:
+                result += self.build_while_loop(el)
+            elif type(el) == file.IfCondition:
+                result += self.build_if_condition(el)
+            elif type(el) == file.Switch:
+                result += self.build_switch(el)
+            elif type(el) == file.Line:
+                result += self.build_line(el)
+        return result
 
+    def build_if_condition(self, if_condition):
+        result = ""
+        for part in if_condition.parts:
+            result += part.indent * '\t'
+            result += f"{part.part_type} {part.cond}:\n"
+            for el in part.body:
+                if type(el) == file.ForLoop:
+                    result += self.build_for_loop(el)
+                elif type(el) == file.WhileLoop:
+                    result += self.build_while_loop(el)
+                elif type(el) == file.IfCondition:
+                    result += self.build_if_condition(el)
+                elif type(el) == file.Switch:
+                    result += self.build_switch(el)
+                elif type(el) == file.Line:
+                    result += self.build_line(el)
+        return result
+
+    def build_line(self, line):
+        result = ""
+        result += line.indent * '\t'
+        result += f"{line.line}\n"
+        return result
+
+    #todo
+    def build_switch(self, switch):
+        pass

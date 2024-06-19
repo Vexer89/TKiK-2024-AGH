@@ -52,13 +52,12 @@ formalParameters : formalParameter (COMMA formalParameter)* ;
 formalParameter : type ID ;
 
 methodBody : block ;
-block : LBRACE blockStatement* RBRACE ;
+block : LBRACE statement* RBRACE ;
 
-blockStatement : statement ;
 variableDeclarators : type ID (ASSIGN literal)? ;
 
 // Reguły dla instrukcji
-statement : ifStatement
+statement : fullIfStatement
           | whileStatement
           | doWhileStatement
           | forStatement
@@ -77,17 +76,22 @@ statement : ifStatement
           | printStatement
           | inputStatement
           ;
-ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE (ELSE statement+)?;
+
+fullIfStatement : ifStatement elseIfStatement* elseStatement? ;
+ifStatement : IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE;
+elseIfStatement : ELSE IF (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE;
+elseStatement : ELSE LBRACE statement+ RBRACE;
 whileStatement : WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) LBRACE statement+ RBRACE ;
 doWhileStatement : DO LBRACE statement+ RBRACE WHILE (logicalExpression | LPAREN LOGICAL_NOT? (extendedIDwithThis | literal) RPAREN) SEMICOLON;
 forStatement : FOR LPAREN forControl RPAREN LBRACE statement+ RBRACE ;
 forControl : enhancedForControl 
            | traditionalForControl 
            ;
-traditionalForControl : forInit SEMICOLON logicalExpression SEMICOLON forUpdate ;
+traditionalForControl : forInit SEMICOLON forCondition SEMICOLON forUpdate ;
 forInit : assignmentStatement
         | extendedIDwithThis
         ;
+forCondition : logicalExpression;
 forUpdate : (arithmeticExpression | incrementStatement | decrementStatement) ;
 enhancedForControl : type ID COLON extendedIDwithThis ;
 switchStatement : SWITCH LPAREN extendedIDwithThis RPAREN switchBlock ;
@@ -157,7 +161,8 @@ arithmeticOperator: ADD
                  ;
 
 //Przypisania
-assignmentStatement : type? extendedIDwithThis assignmentOperator (extendedIDwithThis | literal | newInstance | expression | functionCall) ;
+assignmentStatement : type? extendedIDwithThis assignmentOperator assignedValue ;
+assignedValue : extendedIDwithThis | literal | newInstance | expression | functionCall;
 assignmentOperator : ASSIGN 
                    | ADD_ASSIGN 
                    | SUB_ASSIGN 

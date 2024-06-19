@@ -119,11 +119,6 @@ class java_grammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by java_grammarParser#blockStatement.
-    def visitBlockStatement(self, ctx:java_grammarParser.BlockStatementContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by java_grammarParser#variableDeclarators.
     def visitVariableDeclarators(self, ctx:java_grammarParser.VariableDeclaratorsContext):
         return self.visitChildren(ctx)
@@ -134,8 +129,23 @@ class java_grammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by java_grammarParser#fullIfStatement.
+    def visitFullIfStatement(self, ctx:java_grammarParser.FullIfStatementContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by java_grammarParser#ifStatement.
     def visitIfStatement(self, ctx:java_grammarParser.IfStatementContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by java_grammarParser#elseIfStatement.
+    def visitElseIfStatement(self, ctx:java_grammarParser.ElseIfStatementContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by java_grammarParser#elseStatement.
+    def visitElseStatement(self, ctx:java_grammarParser.ElseStatementContext):
         return self.visitChildren(ctx)
 
 
@@ -166,6 +176,11 @@ class java_grammarVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by java_grammarParser#forInit.
     def visitForInit(self, ctx:java_grammarParser.ForInitContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by java_grammarParser#forCondition.
+    def visitForCondition(self, ctx:java_grammarParser.ForConditionContext):
         return self.visitChildren(ctx)
 
 
@@ -286,6 +301,11 @@ class java_grammarVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by java_grammarParser#assignmentStatement.
     def visitAssignmentStatement(self, ctx:java_grammarParser.AssignmentStatementContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by java_grammarParser#assignedValue.
+    def visitAssignedValue(self, ctx:java_grammarParser.AssignedValueContext):
         return self.visitChildren(ctx)
 
 
