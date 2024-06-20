@@ -250,7 +250,6 @@ class JtoPConverter(java_grammarVisitor):
         param_name = ctx.ID().getText()
         return param_name
 
-    # todo sprawdzić poniżej
     def visitMethodBody(self, ctx):
         return self.visit(ctx.block())
 
@@ -420,25 +419,37 @@ class JtoPConverter(java_grammarVisitor):
             return self.visit(ctx.traditionalForControl())
 
     def visitTraditionalForControl(self, ctx):
-        # todo pomyslec nad bardziej złożonymi przypadkami
-        var = self.visit(ctx.forInit())
-        condition = self.visit(ctx.forCondition())
+
+        var, start = self.visit(ctx.forInit())
+        end = self.visit(ctx.forCondition())
+        update = self.visit(ctx.forUpdate())
+        condition = f"range({start}, {end}, {update})"
 
         new_control = file.ForControl(var, condition)
         return new_control
 
     def visitForInit(self, ctx):
         if ctx.assignmentStatement():
-            return self.visit(ctx.assignmentStatement())
+            as_str = self.visit(ctx.assignmentStatement())
+            var_name, var_value = as_str.split(" = ")
+            return [var_name, var_value]
         elif ctx.extendedIDwithThis():
             return self.visit(ctx.extendedIDwithThis())
 
     def visitForCondition(self, ctx):
-        # todo chujowo bo nie ma jak wydobyć literalu
-        return self.visit(ctx.logicalExpression())
+        operators = ['<', '>', '==', '!=', '<=', '>=']
+        as_str = self.visit(ctx.logicalExpression())
+        for operator in operators:
+            if operator in as_str:
+                var_name, var_value = as_str.split(operator)
+                return var_value.strip()
+        return None
 
     def visitForUpdate(self, ctx):
-        pass
+        if ctx.incrementStatement():
+            return 1
+        elif ctx.decrementStatement():
+            return -1
 
     def visitEnhancedForControl(self, ctx):
         id_name = ctx.ID().getText()
@@ -448,18 +459,20 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitSwitchStatement(self, ctx):
         var = self.visit(ctx.extendedIDwithThis())
-        cases = []
-        for case in ctx.switchBlock():
-            cases.append(self.visit(case))
+        cases = self.visit(ctx.switchBlock())
 
         new_switch = file.Switch(var, cases, self.indentation_level)
 
         return new_switch
 
+    def visitSwitchBlock(self, ctx):
+        cases = []
+        for case in ctx.switchBlockStatementGroup():
+            cases.append(self.visit(case))
+        return cases
+
     def visitSwitchBlockStatementGroup(self, ctx):
-        values = []
-        for value in ctx.switchLabel():
-            values.append(self.visit(value))
+        value = self.visit(ctx.switchLabel())
 
         self.increase_indentation()
         statements = []
@@ -470,7 +483,7 @@ class JtoPConverter(java_grammarVisitor):
             statements.append(obj)
         self.decrease_indentation()
 
-        new_case = file.Case(values, statements, self.indentation_level)
+        new_case = file.Case(value, statements, self.indentation_level)
         return new_case
 
     def visitSwitchLabel(self, ctx):
@@ -479,25 +492,30 @@ class JtoPConverter(java_grammarVisitor):
         elif ctx.DEFAULT():
             return None
 
-    #todo obsługa błędów
+    
     def visitTryStatement(self, ctx):
         try_block = self.visit(ctx.block())
-        catches = "\n".join(self.visit(catch) for catch in ctx.catchClause())
-        finally_block = f"\nfinally:\n{self.visit(ctx.finallyBlock())}" if ctx.finallyBlock() else ""
-        return f"try:\n{try_block}{catches}{finally_block}"
+
+        catches = []
+        for catch in ctx.catchClause():
+            catches.append(self.visit(catch))
+
+        finally_block = self.visit(ctx.finallyBlock()) if ctx.finallyBlock() else None
+
+        return file.TryCatch(try_block, catches, finally_block, self.indentation_level)
 
     def visitCatchClause(self, ctx):
         param = self.visit(ctx.catchFormalParameter())
         block = self.visit(ctx.block())
-        return f"except {param}:\n{block}"
+        return file.CatchBlock(param, block, self.indentation_level)
 
     def visitCatchFormalParameter(self, ctx):
         id_name = ctx.ID().getText()
-        return f"{id_name}"
+        return id_name
 
     def visitFinallyBlock(self, ctx):
         return self.visit(ctx.block())
-    #todo koniec obsługi błędów
+
 
     def visitReturnStatement(self, ctx):
         if ctx.literal():
@@ -515,11 +533,14 @@ class JtoPConverter(java_grammarVisitor):
     def visitContinueStatement(self, ctx):
         return f"continue"
 
-    #todo obsługa błędów
+
     def visitThrowStatement(self, ctx):
-        throw_expr = self.visit(ctx.ID() or ctx.newInstance())
+        if ctx.ID():
+            throw_expr = ctx.ID().getText()
+        elif ctx.newInstance():
+            throw_expr = self.visit(ctx.newInstance())
         return f"raise {throw_expr};"
-    #todo koniec obsługi błędów
+
 
     def visitExpression(self, ctx):
         if ctx.arithmeticExpression():

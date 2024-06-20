@@ -107,17 +107,7 @@ class PythonFileBuilder:
             result += "@abstractmethod \n"
 
         result += f"def {converted_visibility}{method.name}(self, {','.join(method.params) if len(method.params) > 0 else ''}):\n"
-        for el in method.body:
-            if type(el) == file.ForLoop:
-                result += self.build_for_loop(el)
-            elif type(el) == file.WhileLoop:
-                result += self.build_while_loop(el)
-            elif type(el) == file.IfCondition:
-                result += self.build_if_condition(el)
-            elif type(el) == file.Switch:
-                result += self.build_switch(el)
-            elif type(el) == str:
-                result += self.build_line(el)
+        result += self.build_body(method.body)
 
         return result
 
@@ -137,7 +127,7 @@ class PythonFileBuilder:
             result += (constructor.indent + 1) * '\t'
             result += f"self.{name} = {name} \n"
 
-        result += constructor.body
+        result += self.build_body(constructor.body)
 
         return result
 
@@ -145,34 +135,14 @@ class PythonFileBuilder:
         result = ""
         result += for_loop.indent * '\t'
         result += f"for {for_loop.control.var} in {for_loop.control.range}:\n"
-        for el in for_loop.body:
-            if type(el) == file.ForLoop:
-                result += self.build_for_loop(el)
-            elif type(el) == file.WhileLoop:
-                result += self.build_while_loop(el)
-            elif type(el) == file.IfCondition:
-                result += self.build_if_condition(el)
-            elif type(el) == file.Switch:
-                result += self.build_switch(el)
-            elif type(el) == str:
-                result += self.build_line(el)
+        result += self.build_body(for_loop.body)
         return result
 
     def build_while_loop(self, while_loop):
         result = ""
         result += while_loop.indent * '\t'
         result += f"while {while_loop.cond}:\n"
-        for el in while_loop.body:
-            if type(el) == file.ForLoop:
-                result += self.build_for_loop(el)
-            elif type(el) == file.WhileLoop:
-                result += self.build_while_loop(el)
-            elif type(el) == file.IfCondition:
-                result += self.build_if_condition(el)
-            elif type(el) == file.Switch:
-                result += self.build_switch(el)
-            elif type(el) == str:
-                result += self.build_line(el)
+        result += self.build_body(while_loop.body)
         return result
 
     def build_if_condition(self, if_condition):
@@ -180,7 +150,26 @@ class PythonFileBuilder:
         for part in if_condition.parts:
             result += part.indent * '\t'
             result += f"{part.part_type} {part.cond}:\n"
-            for el in part.body:
+            result += self.build_body(part.body)
+        return result
+
+    def build_line(self, line):
+        return line + '\n'
+
+    def build_switch(self, switch):
+        result = ""
+        is_first = True
+        for case in switch.cases:
+            result += case.indent * '\t'
+            if is_first:
+                if_type = "if"
+                is_first = False
+            elif case.value == None:
+                if_type = "else"
+            else:
+                if_type = "elif"
+            result += f"{if_type} {switch.var} == {case.value}:\n"
+            for el in case.body:
                 if type(el) == file.ForLoop:
                     result += self.build_for_loop(el)
                 elif type(el) == file.WhileLoop:
@@ -190,12 +179,47 @@ class PythonFileBuilder:
                 elif type(el) == file.Switch:
                     result += self.build_switch(el)
                 elif type(el) == str:
-                    result += self.build_line(el)
+                    if "break" in el:
+                        pass
+                    else:
+                        result += self.build_line(el)
+                elif type(el) == file.TryCatch:
+                    result += self.build_try_catch(el)
+
         return result
 
-    def build_line(self, line):
-        return line + '\n'
+    def build_try_catch(self, el):
+        result = ""
 
-    #todo
-    def build_switch(self, switch):
-        pass
+        result += el.indent * '\t'
+        result += f"try:\n"
+        result += self.build_body(el.try_block)
+
+        for catch in el.catch_blocks:
+            result += catch.indent * '\t'
+            result += f"except {catch.exception}:\n"
+            result += self.build_body(catch.body)
+
+        if el.finally_block:
+            result += el.finally_block.indent * '\t'
+            result += f"finally:\n"
+            result += self.build_body(el.finally_block)
+        return result
+
+
+    def build_body(self, body):
+        result = ""
+        for el in body:
+            if type(el) == file.ForLoop:
+                result += self.build_for_loop(el)
+            elif type(el) == file.WhileLoop:
+                result += self.build_while_loop(el)
+            elif type(el) == file.IfCondition:
+                result += self.build_if_condition(el)
+            elif type(el) == file.Switch:
+                result += self.build_switch(el)
+            elif type(el) == str:
+                result += self.build_line(el)
+            elif type(el) == file.TryCatch:
+                result += self.build_try_catch(el)
+        return result

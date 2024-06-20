@@ -116,3 +116,18 @@ class Line:
     def __init__(self, line, indent):
         self.line = line
         self.indent = indent
+
+class TryCatch:
+
+    def __init__(self, try_block, catch_blocks, finally_block, indent):
+        self.indent = indent
+        self.try_block = try_block
+        self.catch_blocks = catch_blocks
+        self.finally_block = finally_block
+
+class CatchBlock:
+
+    def __init__(self, exception, body, indent):
+        self.indent = indent
+        self.exception = exception
+        self.body = body

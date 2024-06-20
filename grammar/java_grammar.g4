@@ -92,11 +92,11 @@ forInit : assignmentStatement
         | extendedIDwithThis
         ;
 forCondition : logicalExpression;
-forUpdate : (arithmeticExpression | incrementStatement | decrementStatement) ;
+forUpdate : (incrementStatement | decrementStatement) ;
 enhancedForControl : type ID COLON extendedIDwithThis ;
 switchStatement : SWITCH LPAREN extendedIDwithThis RPAREN switchBlock ;
-switchBlock : LBRACE (switchBlockStatementGroup)* RBRACE ;
-switchBlockStatementGroup : switchLabel+ statement+ ;
+switchBlock : LBRACE (switchBlockStatementGroup)+ RBRACE ;
+switchBlockStatementGroup : switchLabel statement+ ;
 switchLabel : CASE literal COLON | DEFAULT COLON ;
 tryStatement : TRY block (catchClause+ finallyBlock? | finallyBlock) ;
 catchClause : CATCH LPAREN catchFormalParameter RPAREN block ;

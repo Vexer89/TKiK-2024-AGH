@@ -1,6 +1,6 @@
 class Test:
 	def metoda(self, ):
-		for i = 0 in i < 10:
+		for i in range(0, 10, 1):
 			a += 1
 			abc()
 			metoda()
