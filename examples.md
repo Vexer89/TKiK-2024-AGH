@@ -146,3 +146,175 @@ class Animal(ABC):
     def move(self):
         pass
 ```
+
+## Pętle
+
+### For
+
+```java
+for (int i = 0; i < 10; i++) {
+    System.out.println(i);
+}
+```
+zosatnie przetłumaczone na
+```python
+for i in range(0, 10, 1):
+    print(i)
+```
+
+### While
+```java
+int i = 0;
+while (i < 10) {
+    System.out.println(i);
+    i++;
+}
+```
+zostanie przetłumaczone na
+```python
+i = 0
+while i < 10:
+    print(i)
+    i += 1
+```
+
+### Do while
+```java
+int i = 0;
+do {
+    System.out.println(i);
+    i++;
+} while (i < 10);
+```
+zostanie przetłumaczone na
+```python
+i = 0
+while True:
+    print(i)
+    i += 1
+    if i >= 10:
+        break
+```
+
+## Warunki
+
+### If
+```java
+int a = 5;
+if (a > 0) {
+    System.out.println("a is positive");
+} else if (a < 0) {
+    System.out.println("a is negative");
+} else {
+    System.out.println("a is zero");
+}
+```
+zostanie przetłumaczone na
+```python
+a = 5
+if a > 0:
+    print("a is positive")
+elif a < 0:
+    print("a is negative")
+else:
+    print("a is zero")
+```
+
+### Switch
+```java
+int day = 3;
+switch (day) {
+    case 1:
+        System.out.println("Monday");
+        break;
+    case 2:
+        System.out.println("Tuesday");
+        break;
+    case 3:
+        System.out.println("Wednesday");
+        break;
+    case 4:
+        System.out.println("Thursday");
+        break;
+    case 5:
+        System.out.println("Friday");
+        break;
+    case 6:
+        System.out.println("Saturday");
+        break;
+    case 7:
+        System.out.println("Sunday");
+        break;
+    default:
+        System.out.println("Invalid day");
+}
+```
+zostanie przetłumaczone na
+```python
+day = 3
+if day == 1:
+    print("Monday")
+elif day == 2:
+    print("Tuesday")
+elif day == 3:
+    print("Wednesday")
+elif day == 4:
+    print("Thursday")
+elif day == 5:
+    print("Friday")
+elif day == 6:
+    print("Saturday")
+elif day == 7:
+    print("Sunday")
+else:
+    print("Invalid day")
+```
+
+## Wyjątki
+
+```java
+try {
+    throw new Exception();
+} catch (Exception e) {
+    System.out.println("Exception caught");
+} finally {
+    System.out.println("Finally block");
+}
+```
+zostanie przetłumaczone na
+```python
+try:
+    raise Exception()
+except Exception:
+    print("Exception caught")
+finally:
+    print("Finally block")
+```
+
+## Wyrażenia
+
+### Wyrażenie logiczne
+```java
+boolean a = true;
+boolean b = false;
+boolean c = a && b;
+'''
+zostanie przetłumaczone na
+```python
+a = True
+b = False
+c = a and b
+```
+### Wyrażenie arytmetyczne
+```java
+int a = 5;
+int b = 3;
+int c = a + b;
+```
+zostanie przetłumaczone na
+```python
+a = 5
+b = 3
+c = a + b
+```
+
