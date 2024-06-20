@@ -18,6 +18,8 @@ const TranslatorWindow = ({ name, code, handler, color }) => {
         className="shadow appearance-none border rounded w-full h-full py-3 px-3 text-gray-400 bg-black bg-opacity-75 leading-tight overflow-auto resize-none"
         value={code}
         onChange={handler}
+        spellCheck="false"
+        
       ></textarea>
     </div>
   );
