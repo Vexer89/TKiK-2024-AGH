@@ -18,4 +18,4 @@
 
 ## Przykłady
 - [Plik wyjaśniający jak tłumaczone są różne konstrukcje](https://github.com/Vexer89/TKiK-2024-AGH/blob/main/examples.md)
-- [Folder z plikami .py do testów](https://github.com/Vexer89/TKiK-2024-AGH/tree/main/input)
+- [Folder z plikami .java do testów](https://github.com/Vexer89/TKiK-2024-AGH/tree/main/input)
