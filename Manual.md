@@ -7,7 +7,7 @@
 
 # w pliku \JavaToPython\WebJavaToPython\Backend wywołać komende w terminalu
 
-py app.py
+python app.py
 
 # w pliku \JavaToPython\WebJavaToPython\Frontend wywołać komende w terminalu
 
