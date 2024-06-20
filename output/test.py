@@ -1,1 +1,1 @@
-Line 2:28 no viable alternative at input 'publicstaticvoidmain{'
+Function test not declared
