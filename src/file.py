@@ -13,6 +13,7 @@ class Struct:
         self.parents = []
         self.members = members
         self.non_static = []
+        self.has_main = False
 
     def check_for_non_static(self):
         for member in self.members:
@@ -46,6 +47,11 @@ class Method:
         self.is_static = is_static
         self.params = params
         self.body = body
+        if name == "main":
+            self.is_main = True
+        else:
+            self.is_main = False
+
 
 
 class Constructor:

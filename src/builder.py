@@ -31,6 +31,8 @@ class PythonFileBuilder:
 
             elif type(struct) == file.Struct:
                 result += self.build_struct(struct)
+                if struct.has_main:
+                    result += f"{struct.name}.main()\n"
 
         return result
 
@@ -78,6 +80,8 @@ class PythonFileBuilder:
                 result += self.build_static_field(member)
             elif type(member) == file.Method:
                 result += self.build_method(member)
+                if member.is_main:
+                    struct.has_main = True
             elif type(member) == file.Constructor:
                 constructor_exists = True
                 result += self.build_constructor(struct.non_static, member)
@@ -104,10 +108,12 @@ class PythonFileBuilder:
         if method.is_static:
             result += "@staticmethod \n"
             result += method.indent * '\t'
+        else:
+            method.params.insert(0, "self")
         if method.is_abstract:
             result += "@abstractmethod \n"
             result += method.indent * '\t'
-        result += f"def {converted_visibility}{method.name}(self, {','.join(method.params) if len(method.params) > 0 else ''}):\n"
+        result += f"def {converted_visibility}{method.name}({','.join(method.params) if len(method.params) > 0 else ''}):\n"
         result += self.build_body(method.body)
 
         return result
