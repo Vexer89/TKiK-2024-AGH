@@ -734,7 +734,9 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitFunctionCall(self, ctx):
         function_name = self.visit(ctx.extendedIDwithThis())
-        if(function_name not in self.declared_func):
+
+        function_name_without_classes = function_name.split('.')[-1]
+        if(function_name_without_classes not in self.declared_func):
             raise Exception(f"Function {function_name} not declared")
         if ctx.parameters():
             arguments = self.visit(ctx.parameters())
