@@ -6,12 +6,17 @@ from gen.java_grammarVisitor import java_grammarVisitor
 from antlr4 import *
 import file
 import builder
+import errors
 
 
 class JtoPConverter(java_grammarVisitor):
     def __init__(self):
         self.file = file.File()
         self.indentation_level = 0
+        self.declared_classes = []
+        self.declared_interfaces = []
+        self.declared_func = []
+        self.declared_var = []
 
     def add_to_imports(self, lib, cont):
 
@@ -52,6 +57,7 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitClassDeclaration(self, ctx):
         class_name = ctx.ID().getText()
+        self.declared_classes.append(class_name)
         if ctx.classModifiers():
             modifiers = self.visit(ctx.classModifiers())
         else:
@@ -107,6 +113,7 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitInterfaceDeclaration(self, ctx):
         interface_name = ctx.ID().getText()
+        self.declared_interfaces.append(interface_name)
         self.add_to_imports('abc', 'ABC')
         members = self.visit(ctx.interfaceBody())
 
@@ -138,12 +145,16 @@ class JtoPConverter(java_grammarVisitor):
     def visitSuperClass(self, ctx):
         names = []
         for name in ctx.ID():
+            if name.getText() not in self.declared_classes:
+                raise Exception(f"Class {name.getText()} not declared")
             names.append(name.getText())
         return names
 
     def visitInterfaces(self, ctx):
         names = []
         for name in ctx.ID():
+            if name.getText() not in self.declared_interfaces:
+                raise Exception(f"Interface {name.getText()} not declared")
             names.append(name.getText())
         return names
 
@@ -200,6 +211,7 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitVariableDeclarators(self, ctx):
         field_name = ctx.ID().getText()
+        self.declared_var.append(field_name)
 
         if ctx.ASSIGN():
             field_value = ctx.literal().getText()
@@ -212,6 +224,7 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitMethodDeclaration(self, ctx):
         method_name = ctx.ID().getText()
+        self.declared_func.append(method_name)
 
         params = self.visit(ctx.formalParameters()) if ctx.formalParameters() else []
 
@@ -225,8 +238,6 @@ class JtoPConverter(java_grammarVisitor):
         if ctx.modifiers():
             for element in self.visit(ctx.modifiers()):
                 modifiers.append(element.getText())
-
-        print(modifiers)
 
         if "public" in modifiers:
             visibility = 'public'
@@ -660,6 +671,8 @@ class JtoPConverter(java_grammarVisitor):
             return self.visit(ctx.dataStructerDeclaration())
         else:
             class_name = ctx.ID().getText()
+            if class_name not in self.declared_classes:
+                raise Exception(f"Class {class_name} not declared")
             if ctx.parameters():
                 params = self.visit(ctx.parameters())
             else:
@@ -721,6 +734,8 @@ class JtoPConverter(java_grammarVisitor):
 
     def visitFunctionCall(self, ctx):
         function_name = self.visit(ctx.extendedIDwithThis())
+        if(function_name not in self.declared_func):
+            raise Exception(f"Function {function_name} not declared")
         if ctx.parameters():
             arguments = self.visit(ctx.parameters())
         else:
@@ -752,9 +767,21 @@ def convert(input_text):
     lexer = java_grammarLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = java_grammarParser(token_stream)
-    tree = parser.program()
+
+    parser.removeErrorListeners()
+    error_listener = errors.MyErrorListener()
+    parser.addErrorListener(error_listener)
+
+    try:
+        tree = parser.program()
+    except Exception as e:
+        return str(e)
 
     converter = JtoPConverter()
-    file_obj = converter.visit(tree)
+    try:
+        file_obj = converter.visit(tree)
+    except Exception as e:
+        return str(e)
+
     new_builder = builder.PythonFileBuilder(file_obj)
     return new_builder.build()
