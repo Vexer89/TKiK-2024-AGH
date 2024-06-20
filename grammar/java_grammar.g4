@@ -1,7 +1,7 @@
 grammar java_grammar;
 
 // Reguły dla programu
-program : (importDeclaration | packageDeclaration)* PUBLIC structerDeclaration+ ;
+program : (importDeclaration | packageDeclaration)* PUBLIC structerDeclaration+ EOF?;
 
 // Reguły dla importów
 importDeclaration : IMPORT extendedID SEMICOLON ;

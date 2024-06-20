@@ -399,11 +399,13 @@ class JtoPConverter(java_grammarVisitor):
             if type(obj) == str:
                 obj = self.getIndentation() + obj
             body.append(obj)
-        self.decrease_indentation()
 
         condition = self.visit(ctx.logicalExpression())
-        body.append(file.Line(f"if {condition}:", self.indentation_level))
-        body.append(file.Line(f"break", self.indentation_level + 1))
+        body.append(f"{self.getIndentation()}if {condition}:")
+        self.increase_indentation()
+        body.append(f"{self.getIndentation()}break")
+        self.decrease_indentation()
+        self.decrease_indentation()
 
         new_while = file.WhileLoop("True", body, self.indentation_level)
 
