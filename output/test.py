@@ -1,9 +1,1 @@
-class DoWhileTest:
-	@staticmethod 
-	def main(self, ):
-		count = 5
-		while True:
-			print("Count: " + count)
-			count -= 1
-			if (count > 0):
-				break
+Line 2:28 no viable alternative at input 'publicstaticvoidmain{'

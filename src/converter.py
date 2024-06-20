@@ -6,6 +6,7 @@ from gen.java_grammarVisitor import java_grammarVisitor
 from antlr4 import *
 import file
 import builder
+import errors
 
 
 class JtoPConverter(java_grammarVisitor):
@@ -752,7 +753,15 @@ def convert(input_text):
     lexer = java_grammarLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
     parser = java_grammarParser(token_stream)
-    tree = parser.program()
+
+    parser.removeErrorListeners()
+    error_listener = errors.MyErrorListener()
+    parser.addErrorListener(error_listener)
+
+    try:
+        tree = parser.program()
+    except Exception as e:
+        return str(e)
 
     converter = JtoPConverter()
     file_obj = converter.visit(tree)
