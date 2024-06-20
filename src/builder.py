@@ -119,7 +119,7 @@ class PythonFileBuilder:
         undeclared_non_static = []
         for field in non_static:
             if field.name not in constructor.params:
-                undeclared_non_static.append(field.name)
+                undeclared_non_static.append(f"{convert_visibility(field.visibility)}{field.name}")
         params_extended = constructor.params + undeclared_non_static
 
         result += f"def __init__(self, {','.join(params_extended) if len(params_extended) > 0 else ''}):\n "

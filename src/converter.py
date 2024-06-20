@@ -224,7 +224,9 @@ class JtoPConverter(java_grammarVisitor):
         modifiers = []
         if ctx.modifiers():
             for element in self.visit(ctx.modifiers()):
-                modifiers.append(element)
+                modifiers.append(element.getText())
+
+        print(modifiers)
 
         if "public" in modifiers:
             visibility = 'public'
@@ -520,8 +522,8 @@ class JtoPConverter(java_grammarVisitor):
         return file.CatchBlock(param, block, self.indentation_level)
 
     def visitCatchFormalParameter(self, ctx):
-        id_name = ctx.ID().getText()
-        return id_name
+        exception = self.visit(ctx.type_())
+        return exception
 
     def visitFinallyBlock(self, ctx):
         return self.visit(ctx.block())
@@ -600,7 +602,6 @@ class JtoPConverter(java_grammarVisitor):
         return f"not {self.visit(ctx.logicalTerm())}"
 
     def visitArithmeticExpression(self, ctx):
-        print("ArithmeticExpression")
         if ctx.arithmeticOperator():
             left = self.visit(ctx.arithmeticExpression())
             operator = self.visit(ctx.arithmeticOperator())
@@ -622,7 +623,6 @@ class JtoPConverter(java_grammarVisitor):
             return "%"
 
     def visitArithmeticTerm(self, ctx):
-        print("ArithmeticTerm")
         if ctx.extendedIDwithThis():
             return self.visit(ctx.extendedIDwithThis())
         elif ctx.literal():
@@ -633,7 +633,6 @@ class JtoPConverter(java_grammarVisitor):
             return f"({self.visit(ctx.arithmeticExpression())})"
 
     def visitUnaryArithmeticExpression(self, ctx):
-        print("UnaryArithmeticExpression")
         operator = "+" if ctx.ADD() else "-"
         return f"{operator} {self.visit(ctx.arithmeticTerm())}"
 
