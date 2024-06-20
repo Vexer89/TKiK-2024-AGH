@@ -298,7 +298,7 @@ finally:
 boolean a = true;
 boolean b = false;
 boolean c = a && b;
-'''
+```
 zostanie przetłumaczone na
 ```python
 a = True
