@@ -126,7 +126,7 @@ class PythonFileBuilder:
 
         for name in undeclared_non_static:
             result += (constructor.indent + 1) * '\t'
-            result += f"self.{name} = {name} \n"
+            result += f"self.{name} = None \n"
 
         result += self.build_body(constructor.body)
 

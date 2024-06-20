@@ -1,4 +1,4 @@
-# Manual
+# Przykłady
 Ten plik zawiera opis jak konkretne struktury w javie są tłumaczone na pythona.
 ## Nagłówki
 ### import
