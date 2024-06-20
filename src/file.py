@@ -5,13 +5,13 @@ class File:
 
 
 class Struct:
-    def __init__(self, name, is_abstract, is_interface, indent):
+    def __init__(self, name, is_abstract, is_interface, members, indent):
         self.indent = indent
         self.name = name
         self.is_abstract = is_abstract
         self.is_interface = is_interface
         self.parents = []
-        self.members = []
+        self.members = members
         self.non_static = []
 
     def check_for_non_static(self):

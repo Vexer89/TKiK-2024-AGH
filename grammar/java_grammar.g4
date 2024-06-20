@@ -98,7 +98,7 @@ switchStatement : SWITCH LPAREN extendedIDwithThis RPAREN switchBlock ;
 switchBlock : LBRACE (switchBlockStatementGroup)+ RBRACE ;
 switchBlockStatementGroup : switchLabel statement+ ;
 switchLabel : CASE literal COLON | DEFAULT COLON ;
-tryStatement : TRY block (catchClause+ finallyBlock? | finallyBlock) ;
+tryStatement : TRY block catchClause+ finallyBlock? ;
 catchClause : CATCH LPAREN catchFormalParameter RPAREN block ;
 catchFormalParameter : type ID ;
 finallyBlock : FINALLY block ;

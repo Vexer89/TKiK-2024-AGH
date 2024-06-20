@@ -103,9 +103,10 @@ class PythonFileBuilder:
 
         if method.is_static:
             result += "@staticmethod \n"
+            result += method.indent * '\t'
         if method.is_abstract:
             result += "@abstractmethod \n"
-
+            result += method.indent * '\t'
         result += f"def {converted_visibility}{method.name}(self, {','.join(method.params) if len(method.params) > 0 else ''}):\n"
         result += self.build_body(method.body)
 
@@ -164,11 +165,13 @@ class PythonFileBuilder:
             if is_first:
                 if_type = "if"
                 is_first = False
-            elif case.value == None:
-                if_type = "else"
             else:
                 if_type = "elif"
-            result += f"{if_type} {switch.var} == {case.value}:\n"
+            if case.value is None:
+                result += "else:\n"
+            else:
+                result += f"{if_type} {switch.var} == {case.value}:\n"
+
             for el in case.body:
                 if type(el) == file.ForLoop:
                     result += self.build_for_loop(el)
@@ -201,7 +204,7 @@ class PythonFileBuilder:
             result += self.build_body(catch.body)
 
         if el.finally_block:
-            result += el.finally_block.indent * '\t'
+            result += el.indent * '\t'
             result += f"finally:\n"
             result += self.build_body(el.finally_block)
         return result
